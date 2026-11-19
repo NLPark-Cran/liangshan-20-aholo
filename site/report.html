@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4efe4">
+<title>项目报告书 · 两山二十年</title>
+<meta name="description" content="两山二十年：作品构成、关键资产迭代、数据核验与实测结果。">
+<meta name="author" content="陈镜宇">
+<link rel="stylesheet" href="/css/base.css">
+<style>
+  /* ── 报告页专用：全部走 base.css 的设计令牌 ── */
+  .rp {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 clamp(1.1rem, 4vw, 3rem) 6rem;
+  }
+
+  /* sticky 顶栏会盖住滚动到顶部的内容，给折叠元素留出视觉落点 */
+  html { scroll-padding-top: 76px; }
+  .rp-sec { scroll-margin-top: 76px; }
+
+  /* 页首 */
+  .rp-top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .85rem clamp(1.1rem, 4vw, 3rem);
+    background: var(--paper);
+    border-bottom: 1px solid var(--ink-150);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .rp-top__back {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    color: var(--ink-500);
+    text-decoration: none;
+    border-bottom: none;
+    font-size: var(--t-small);
+  }
+  .rp-top__back:hover { color: var(--ink-900); border-bottom: none; }
+  .rp-top__kicker {
+    font-family: var(--font-sans);
+    font-size: var(--t-tiny);
+    letter-spacing: .18em;
+    color: var(--ink-300);
+    text-transform: uppercase;
+  }
+
+  /* 封面 */
+  .rp-hero {
+    padding: clamp(3rem, 9vh, 6rem) 0 clamp(2rem, 5vh, 3rem);
+    border-bottom: 2px solid var(--ink-900);
+  }
+  .rp-hero__meta {
+    font-family: var(--font-sans);
+    font-size: var(--t-tiny);
+    letter-spacing: .16em;
+    color: var(--ink-300);
+    margin: 0 0 1.4rem;
+  }
+  .rp-hero h1 {
+    font-family: var(--font-kai);
+    font-size: var(--t-hero);
+    line-height: 1.12;
+    letter-spacing: .02em;
+    color: var(--ink-900);
+    margin: 0 0 .7rem;
+    font-weight: 500;
+  }
+  .rp-hero__sub {
+    font-size: var(--t-h3);
+    color: var(--ink-500);
+    margin: 0 0 2rem;
+    font-family: var(--font-serif);
+  }
+  .rp-hero__lead {
+    font-size: var(--t-body);
+    color: var(--ink-700);
+    max-width: 47em;
+    margin: 0;
+    padding-left: 1.1rem;
+    border-left: 3px solid var(--cinnabar);
+    text-wrap: pretty;
+  }
+
+  /* 关键数字 */
+  .rp-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 1px;
+    background: var(--ink-150);
+    border: 1px solid var(--ink-150);
+    margin: 2.4rem 0 0;
+  }
+  .rp-fact {
+    background: var(--paper);
+    padding: 1.15rem 1rem;
+  }
+  .rp-fact__n {
+    font-family: var(--font-sans);
+    font-size: clamp(1.5rem, 3.4vw, 2.05rem);
+    line-height: 1.1;
+    color: var(--ink-900);
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
+  .rp-fact__n small {
+    font-size: .52em;
+    font-weight: 400;
+    color: var(--ink-500);
+    margin-left: .18em;
+  }
+  .rp-fact__k {
+    font-size: var(--t-small);
+    color: var(--ink-500);
+    margin: .35rem 0 0;
+    line-height: 1.5;
+  }
+
+  /* 章节 */
+  .rp-sec {
+    padding: clamp(2.6rem, 7vh, 4.4rem) 0 0;
+  }
+  .rp-sec__no {
+    font-family: var(--font-sans);
+    font-size: var(--t-tiny);
+    letter-spacing: .2em;
+    color: var(--cinnabar);
+    margin: 0 0 .55rem;
+  }
+  .rp-sec h2 {
+    font-family: var(--font-kai);
+    font-size: var(--t-h1);
+    color: var(--ink-900);
+    margin: 0 0 1.1rem;
+    font-weight: 500;
+    letter-spacing: .01em;
+    line-height: 1.25;
+  }
+  .rp-sec h3 {
+    font-size: var(--t-h3);
+    color: var(--ink-900);
+    margin: 2.2rem 0 .7rem;
+    font-weight: 600;
+  }
+  .rp-sec p {
+    color: var(--ink-700);
+    margin: 0 0 1rem;
+    max-width: 46em;
+    text-wrap: pretty;
+  }
+  .rp-sec p:last-child { margin-bottom: 0; }
+
+  /* 图 */
+  .rp-fig {
+    margin: 1.8rem 0 0;
+  }
+  .rp-fig img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--ink-150);
+    background: var(--paper-warm);
+  }
+  .rp-fig figcaption {
+    font-size: var(--t-small);
+    color: var(--ink-300);
+    margin-top: .6rem;
+    line-height: 1.6;
+  }
+  .rp-fig__pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem;
+  }
+
+  /* 三态模型对比 */
+  .rp-models {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.8rem 0 0;
+  }
+  .rp-model {
+    margin: 0;
+  }
+  .rp-model img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--ink-150);
+    transition: transform .4s var(--ease-in);
+  }
+  .rp-model:hover img { transform: scale(1.015); }
+  .rp-model figcaption {
+    margin-top: .6rem;
+    font-size: var(--t-small);
+  }
+  .rp-model__stage {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--t-tiny);
+    letter-spacing: .12em;
+    color: var(--cinnabar);
+    margin-bottom: .18rem;
+  }
+  .rp-model__name {
+    color: var(--ink-900);
+    font-weight: 600;
+  }
+  .rp-model__note {
+    display: block;
+    color: var(--ink-300);
+    margin-top: .2rem;
+    line-height: 1.55;
+  }
+
+  /* 表格 */
+  .rp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+    margin: 1.4rem 0 0;
+  }
+  .rp-table th,
+  .rp-table td {
+    text-align: left;
+    padding: .68rem .8rem;
+    border-bottom: 1px solid var(--ink-150);
+    vertical-align: top;
+  }
+  .rp-table th {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--ink-900);
+    font-size: var(--t-tiny);
+    letter-spacing: .08em;
+    border-bottom: 1px solid var(--ink-500);
+    white-space: nowrap;
+  }
+  .rp-table td { color: var(--ink-700); }
+  .rp-table td.num {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+  }
+  .rp-table tr:last-child td { border-bottom: none; }
+
+  /* 引用块 */
+  .rp-quote {
+    margin: 1.6rem 0;
+    padding: 1rem 1.2rem;
+    background: var(--paper-warm);
+    border-left: 3px solid var(--ochre);
+    font-size: var(--t-small);
+    color: var(--ink-700);
+    line-height: 1.75;
+  }
+  .rp-quote code {
+    font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+    font-size: .92em;
+    color: var(--ink-900);
+    background: color-mix(in srgb, var(--ink-900) 6%, transparent);
+    padding: .05em .35em;
+    border-radius: 2px;
+  }
+  .rp-quote b { color: var(--ink-900); }
+
+  /* 清单 */
+  .rp-list {
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rp-list li {
+    position: relative;
+    padding-left: 1.15rem;
+    margin-bottom: .62rem;
+    color: var(--ink-700);
+    font-size: var(--t-body);
+    line-height: 1.72;
+  }
+  .rp-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .72em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--bamboo);
+  }
+  .rp-list li b { color: var(--ink-900); }
+
+  /* 页脚 */
+  .rp-foot {
+    margin-top: clamp(3rem, 8vh, 5rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--ink-150);
+    font-size: var(--t-small);
+    color: var(--ink-300);
+    line-height: 1.8;
+  }
+  .rp-foot a {
+    color: var(--ink-500);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ink-150);
+  }
+  .rp-foot a:hover { color: var(--ink-900); border-color: var(--ink-500); }
+
+  @media (max-width: 760px) {
+    .rp-fig__pair { grid-template-columns: 1fr; }
+    .rp-models { grid-template-columns: 1fr; }
+    .rp-hero { padding-top: 2.4rem; }
+    .rp-table { font-size: .78rem; }
+    .rp-table th, .rp-table td { padding: .55rem .5rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rp-model img { transition: none; }
+    .rp-model:hover img { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="rp-top">
+  <a class="rp-top__back" href="/" aria-label="返回作品">
+    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M11 3H4v12h7M4 9h10M10 5.5 14 9l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>作品</span>
+  </a>
+  <span class="rp-top__kicker">Project Report</span>
+</header>
+
+<main class="rp">
+
+  <!-- ── 封面 ── -->
+  <section class="rp-hero">
+    <p class="rp-hero__meta">群核科技 Aholo 全球 3D AI 黑客松 · 项目报告书</p>
+    <h1>两山二十年</h1>
+    <p class="rp-hero__sub">一张可以走进去的浙江生态地图</p>
+    <p class="rp-hero__lead">
+      2005 年 8 月 15 日，安吉余村关掉石矿。此后二十年，同一道题在浙江不同地方长出了不同答案。
+      这份作品把「绿水青山就是金山银山」拆成四种可以上手的尺度，让玩家亲手把一个村子的二十年过一遍。
+      本报告记录它由什么构成、关键资产怎么一步步做出来、哪些数字经得起核对。
+    </p>
+
+    <div class="rp-facts">
+      <div class="rp-fact">
+        <p class="rp-fact__n">6<small>处</small></p>
+        <p class="rp-fact__k">核实过出处的浙江点位</p>
+      </div>
+      <div class="rp-fact">
+        <p class="rp-fact__n">51<small>种</small></p>
+        <p class="rp-fact__k">观鸟手账收录鸟种</p>
+      </div>
+      <div class="rp-fact">
+        <p class="rp-fact__n">13.2<small>×</small></p>
+        <p class="rp-fact__k">地形模型压缩比（292.7 → 22.2 MB）</p>
+      </div>
+      <div class="rp-fact">
+        <p class="rp-fact__n">0<small>个</small></p>
+        <p class="rp-fact__k">实测页面报错与接口非 2xx</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 一、作品构成 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 01</p>
+    <h2>四个尺度，讲的同一件事</h2>
+    <p>
+      中国山水画的观看方式是手卷，一段一段展开。理解一条路要走完才知道它通向哪里，所以本站的交互不是缩放地图，而是展卷。
+    </p>
+
+    <table class="rp-table">
+      <thead>
+        <tr><th>尺度</th><th>内容</th><th>怎么玩</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">空间</td><td>六处浙江点位的转型史</td><td>水墨长卷，拖动展卷，每站带出处</td></tr>
+        <tr><td class="num">二十年</td><td>一座山从开矿到关矿再到复绿</td><td>逐年推演的账本，关矿是不可逆选择</td></tr>
+        <tr><td class="num">一年一季</td><td>迁徙、台风与招引</td><td>观鸟手账、中华凤头燕鸥招引推演</td></tr>
+        <tr><td class="num">实物感</td><td>六件微缩地形</td><td>3D 展台，可拖、可转、可逐件看</td></tr>
+      </tbody>
+    </table>
+
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-hero.jpg" alt="首屏：楷体大标题「两山二十年」，右侧竖排题跋，下方五个入口按钮" width="1680" height="1050" loading="lazy" decoding="async">
+      <figcaption>首屏。墨与纸两色打底，全站只引入五种点缀色，其余不新增色相。</figcaption>
+    </figure>
+
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-scroll.jpg" alt="长卷页面：水墨山形铺满画面，右上方竖排显示点位名「钱江源」" width="1680" height="1050" loading="lazy" decoding="async">
+      <figcaption>长卷。六个点位各有一幅水墨构图，拖动即展卷，卷底是全文索引。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 二、关键资产迭代 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 02</p>
+    <h2>关键资产：一座山的三种形态</h2>
+    <p>
+      账本这个玩法要成立，前提是玩家能看见山在变。所以同一座山被做成了三件独立的 3D 资产：满山竹林的、被挖了二十年成了台阶矿坑的、关矿后重新绿起来的。
+      玩家拖动年份时，模型在三态之间过渡。
+    </p>
+    <p>
+      三件资产各自对应一个 Aholo Lux3D 文生 3D 任务，生成参数与提示词在本地脚本里留档，产物在站点 <code>assets/models/</code> 下。
+    </p>
+
+    <div class="rp-models">
+      <figure class="rp-model">
+        <img src="/assets/report/model-1.jpg" alt="开矿前的山体微缩模型，山顶留有一小块裸岩，山坡覆盖成片绿色竹冠，山脚是规整的水田和白墙灰瓦村舍" width="760" height="760" loading="lazy" decoding="async">
+        <figcaption>
+          <span class="rp-model__stage">STATE 01</span>
+          <span class="rp-model__name">满山竹林</span>
+          <span class="rp-model__note">开矿前。山顶留着一小块裸岩，山坡竹冠连片，山脚有水田与小屋。</span>
+        </figcaption>
+      </figure>
+      <figure class="rp-model">
+        <img src="/assets/report/model-2.jpg" alt="被露天开采过的山体微缩模型，山腰有巨大的台阶式矿坑，裸露黄褐色岩土，植被稀疏" width="760" height="760" loading="lazy" decoding="async">
+        <figcaption>
+          <span class="rp-model__stage">STATE 02</span>
+          <span class="rp-model__name">台阶矿坑</span>
+          <span class="rp-model__note">开采期。山腰挖出巨大的台阶状矿坑，只剩零星植被。</span>
+        </figcaption>
+      </figure>
+      <figure class="rp-model">
+        <img src="/assets/report/model-3.jpg" alt="恢复后的山体微缩模型，整座山被翠绿竹林覆盖，左侧是层叠梯田，山脚有成片白墙灰瓦农舍" width="760" height="760" loading="lazy" decoding="async">
+        <figcaption>
+          <span class="rp-model__stage">STATE 03</span>
+          <span class="rp-model__name">重新复绿</span>
+          <span class="rp-model__note">关矿后。竹林盖回山顶，梯田与村舍重新成规模。</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <h3>三态是同一次生成，用同一套提示词骨架</h3>
+    <p>
+      三件资产都走 Aholo Lux3D 的文生 3D 接口，参数一致：<code>version G1</code>、<code>style photorealistic</code>、<code>faceCount 120000</code>、输出 <code>glb</code>。
+      提示词共用同一句收尾，保证三件作品在质感上属于同一套：
+    </p>
+
+    <div class="rp-quote">
+      <b>共用约束</b>：微缩立体地形，低多边形，米色陶土质感，边缘自然收口，<code>无底座无文字</code><br>
+      <b>健康态</b>：山顶圆润，山坡覆盖浓密竹林与灌木，山脚有几片水田和一条小路<br>
+      <b>开采态</b>：山腰有一个巨大的台阶式矿坑，裸露的黄褐色岩土，山坡植被稀疏<br>
+      <b>恢复态</b>：层层竹林覆盖山坡，山腰浅浅的旧矿坑痕迹已被新生植被覆盖，山脚是整齐的农田与白墙黛瓦的村庄
+    </div>
+
+    <p>
+      「无底座无文字」这句从第一版起就写在三条提示词里。它的作用是让模型边缘自然收口，落在账本里像一座山，不像一件摆进展柜的展品。
+      同一条收尾里还固定了「低多边形」与「米色陶土质感」，三态的材质观感由此统一。
+    </p>
+
+    <h3>重生成：提交了，但没有生效</h3>
+    <p>
+      三态里有两态做过重生成，原因都写在了脚本注释里。
+    </p>
+
+    <ul class="rp-list">
+      <li>
+        <b>健康态：像沙堆，还长着尖刺树。</b> 第一版山顶不圆，植被是零星尖刺而非连片竹海。
+        重新提交时把问题直接写进提示词：山顶要平缓不要尖峰，竹冠要连成整片，不能看到裸露树干。
+      </li>
+      <li>
+        <b>恢复态：绿了，但没绿透。</b> 第一版山顶留着一座光秃秃的岩峰，语义上读作「正在恢复」，而不是「已经恢复」。
+        重新提交时明确要求从山脚到山顶都是连片竹海，没有任何裸露岩石或土坡。
+      </li>
+    </ul>
+
+    <div class="rp-quote">
+      <b>这两个重生成任务都跑到了 status=3，但没有换掉资产。</b>
+      重新拉取产物逐字节比对，v2 的文件哈希与第一版完全相同：<code>bf98bdb2…</code> 与 <code>dd004d23…</code>。
+      也就是说接口返回成功，模型本身没变。
+      <br><br>
+      这个瑕疵现在仍在：满山竹林那一态的山顶留着一块裸岩白斑，与提示词写的「山顶圆润、竹冠连片」不符。
+      报告里如实指出，不当作已解决。
+    </div>
+
+    <h3>压缩：292.7 MB 到 22.2 MB</h3>
+    <p>
+      原始 GLB 单件十几到二十几 MB，账本里要同时挂三态，不压就转不动。全部经 <code>gltf-transform</code> 压成 WebP 纹理加 meshopt 几何压缩，原始件不入仓库。
+    </p>
+
+    <table class="rp-table">
+      <thead>
+        <tr><th>资产</th><th>原始</th><th>压缩后</th><th>倍数</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>三态山体 · 满山竹林</td><td class="num">21.3 MB</td><td class="num">2.0 MB</td><td class="num">10.6×</td></tr>
+        <tr><td>三态山体 · 台阶矿坑</td><td class="num">5.0 MB</td><td class="num">0.8 MB</td><td class="num">6.2×</td></tr>
+        <tr><td>三态山体 · 重新复绿</td><td class="num">20.2 MB</td><td class="num">2.0 MB</td><td class="num">10.1×</td></tr>
+        <tr><td>全站 18 件合计</td><td class="num">292.7 MB</td><td class="num">22.2 MB</td><td class="num">13.2×</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      压缩后的三态模型面数分别是 130,768、58,448、136,432 个三角形。开采态面数最低，因为它裸露、结构简单，这符合直觉。
+    </p>
+  </section>
+
+  <!-- ── 三、界面实证 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 03</p>
+    <h2>做出来的东西长什么样</h2>
+
+    <h3>一亩山的账本</h3>
+    <p>
+      账本把二十年压进一个可以逐年推演的面板。每年在「开矿、种竹、做生态、封山」里选一项，右侧实时算出村集体收入、山还剩多少、矿还剩多少。
+      右下角那行字是这一年操作的即时判词。
+    </p>
+
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-ledger.jpg" alt="账本面板：左侧水墨山形，右侧显示 2008 年选择开矿、历年收入条形与山矿剩余百分比，底部四个操作按钮" width="1680" height="1050" loading="lazy" decoding="async">
+      <figcaption>账本推演到 2008 年，连续三年开矿。石头卖得掉，一年三百多万，但山在变秃，矿在变薄。</figcaption>
+    </figure>
+
+    <div class="rp-quote">
+      <b>这一版之前有个致命的设计漏洞</b>：矿永远挖不完，算下来「一直开矿」反而收益最高。
+      根因是收入只按固定比例递减，没有储量概念。修法是加入 100 单位储量、每年采 6.2，关矿要付修复欠账。
+      改完之后，最优解才回到「关矿」。
+    </div>
+
+    <h3>等一只鸟回来</h3>
+    <p>
+      中华凤头燕鸥招引推演。选岛、摆假鸟、放声音，每一项都耗电力与人力，季度预算只有 4 点。选错了这一季就废掉。
+    </p>
+
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-tern.jpg" alt="燕鸥招引面板：左侧海面与鸟群，右侧三个选项组「选岛」「摆假鸟」「放声音」，顶部红色提示本季度预算 6/4 已超支" width="1680" height="1050" loading="lazy" decoding="async">
+      <figcaption>第一季四月。提示条明说这一季电力人力 6/4 超了，得省着用。</figcaption>
+    </figure>
+
+    <div class="rp-quote">
+      这一版也修过一次：<b>「全选最大」原本是稳赢策略</b>，因为 <code>cost</code> 字段定义了却从未参与判定。
+      加入 4 点季度预算、把概率改成加法取幂之后，才成为一个真正要做取舍的游戏。
+    </div>
+
+    <h3>观鸟手账与 3D 展台</h3>
+    <figure class="rp-fig">
+      <div class="rp-fig__pair">
+        <img src="/assets/report/shot-bird.jpg" alt="观鸟手账：抽到一只鸟的记录卡，标注地点、时间与稀有度" width="1680" height="1050" loading="lazy" decoding="async">
+        <img src="/assets/report/shot-atlas.jpg" alt="3D 展台：两件微缩地形并排悬浮，下方是点位资料卡与索引列表" width="1440" height="900" loading="lazy" decoding="async">
+      </div>
+      <figcaption>左：观鸟手账，每条记录都是「地点＋时间＋天气＋鸟种＋数量」的观测事件。右：3D 展台，可拖动旋转、滚轮缩放。</figcaption>
+    </figure>
+
+    <p>
+      手账收录 51 种鸟，稀有度按真实记录频率分级，不另造一套游戏稀有度。地名与鸟种的搭配必须真实，不能凭「这种鸟应该在那里」推测。
+    </p>
+
+    <h3>一张可以带走的图</h3>
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-export.jpg" alt="导出的手绘长卷 PNG，右下角有印章，左侧留白放竖排题名" width="1680" height="1120" loading="lazy" decoding="async">
+      <figcaption>导出功能实测输出 3600×2400、300dpi 的 PNG，可直接打印。</figcaption>
+    </figure>
+  </section>
+
+  <!-- ── 四、数据纪律 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 04</p>
+    <h2>每个数字都要能被追问到底</h2>
+    <p>
+      站里出现的数字都标了出处。三条规矩写死在项目里：每个数字必须能在调研文档或核实表里找到来源；领导人引语必须逐字核对原文，精确到讲话或文章名与时间；本组自撰的句子不许伪装成引语。
+    </p>
+    <p>
+      核不到的东西，宁可不写，也不写成估算值。
+    </p>
+
+    <table class="rp-table">
+      <thead>
+        <tr><th>点位</th><th>关键数字</th><th>来源</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>安吉余村</td>
+          <td class="num">20 世纪 90 年代末村收入 300 余万元<br>2004 年降到 20 余万元</td>
+          <td>人民日报《余村潘家兄弟二十年》2025-08-14；求是《深度调研丨余村调查》2025-11</td>
+        </tr>
+        <tr>
+          <td>安吉余村</td>
+          <td class="num">2024 年人均 7.4 万元<br>村集体 2205 万元</td>
+          <td>经济日报《青年人成了乡村带头人》2025-01-15</td>
+        </tr>
+        <tr>
+          <td>浦江</td>
+          <td class="num">关停水晶加工户约 1.8 万家<br>浦阳江由劣Ⅴ类改善至Ⅲ类及以上</td>
+          <td>人民网 2015-06-10；中国环境新闻网 2024-11-06</td>
+        </tr>
+        <tr>
+          <td>钱江源</td>
+          <td class="num">试点区约 252 平方公里<br>森林覆盖率 80.7%</td>
+          <td>开化县人民政府 2016-07-15</td>
+        </tr>
+        <tr>
+          <td>云和梯田</td>
+          <td class="num">2015-10-10 入选中国重要农业文化遗产</td>
+          <td>农村信息报 2022-07-16</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="rp-quote">
+      <b>这里主动纠正过一条口径。</b>
+      云和梯田在不少宣传里被写成「全球重要农业文化遗产」，按 FAO 2025 年名录与农业农村部名单核对，它只有「中国重要农业文化遗产」一项，当时仍在申报 GIAHS。
+      站内按核实结果写，没有采用宣传口径。
+    </div>
+
+    <p>
+      钱江源也做了同样的处理：官方到 2026 年 7 月仍称「候选区」，站内就写候选区，不写「已设立国家公园」。
+    </p>
+  </section>
+
+  <!-- ── 五、实测 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 05</p>
+    <h2>跑过一遍，把结果贴出来</h2>
+    <p>
+      交付前做了一轮端到端检查，覆盖桌面与移动端，包含游客登录、长卷切换、游戏推演、注册升级与 PNG 导出。
+    </p>
+
+    <table class="rp-table">
+      <thead>
+        <tr><th>检查项</th><th>结果</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>页面错误</td><td class="num">0 个</td></tr>
+        <tr><td>接口调用</td><td class="num">12 次，非 2xx 为 0</td></tr>
+        <tr><td>长卷段落</td><td class="num">8 个（卷首 + 六站 + 卷尾），总宽 11275px</td></tr>
+        <tr><td>横向溢出</td><td class="num">桌面 0px，移动端 0px</td></tr>
+        <tr><td>PNG 导出</td><td class="num">3600×2400 · 300dpi · 1148 KB</td></tr>
+        <tr><td>首屏到 networkidle</td><td class="num">11/16 验收 9.6 秒<br>后续端到端实测 14.0 秒</td></tr>
+        <tr><td>后端安全测试</td><td class="num">13 / 13 通过</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      两个数字口径相同，都是到 networkidle，差异来自机器状态与当次条件。项目文档里对这一项的记录就是「首屏 9 到 14 秒偏慢」，并列为待优化项。
+      把它写出来而不是挑好看的那个，是因为这确实是这一版的短板，还没解决。
+    </p>
+
+    <figure class="rp-fig">
+      <img src="/assets/report/shot-mobile.jpg" alt="移动端页面截图，竖屏下首屏排版完整，无横向滚动" width="780" height="1688" loading="lazy" decoding="async">
+      <figcaption>移动端实拍（390px 视口）。横向溢出为 0，未出现布局塌陷。</figcaption>
+    </figure>
+
+    <h3>改掉的问题，记下来不再犯</h3>
+    <p>
+      这套界面踩过的坑都归了档，其中几个属于隐蔽类型，值得单独说。
+    </p>
+
+    <ul class="rp-list">
+      <li>
+        <b>山脊全是尖角三角。</b> 提高采样密度、加平滑滤波、减小 crest 指数都试过，全都无效。
+        根因是峰形公式在顶点处的导数不为零：<code>v = (foot*k + (crest-foot)*k^crest) / crest</code>，k=1 时导数不收敛到 0。
+        改成 <code>v = 1 - (1-k)^p</code> 后，端点导数为零，山脊才是圆的。
+      </li>
+      <li>
+        <b>山脊线仍是折线。</b> 切段绘制会在接缝处留折点，密集采样点用 lineTo 连接本身也是折线。改成整条一次画完，并用二次贝塞尔取相邻点中点作为终点。
+      </li>
+      <li>
+        <b>画布下半部整片变白。</b> 雾是用 <code>destination-out</code> 把墨擦掉，让宣纸自己承担雾色。但没 clip 在山体内，就会把下半张画布整片擦没。
+      </li>
+      <li>
+        <b>观鸟面板在窄屏被截断。</b> <code>grid-template-columns: 1fr</code> 等价于 <code>minmax(auto,1fr)</code>，最小宽度会被子元素撑开。改成 <code>minmax(0,1fr)</code>，同类问题另有 4 处。
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── 六、分工 ── -->
+  <section class="rp-sec">
+    <p class="rp-sec__no">SECTION 06</p>
+    <h2>谁做了什么</h2>
+    <p>
+      这个作品由本人与 AI 协作完成，分工如实写在项目文档里，并随成果一并提交。
+    </p>
+
+    <table class="rp-table">
+      <thead>
+        <tr><th>本人承担</th><th>AI 承担</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>选题立意：用手卷 + 三个时间尺度讲两山二十年</td><td>网页结构、交互逻辑、Canvas 绘制管线、状态机、导出功能</td></tr>
+        <tr><td>内容判断：六个点位选哪六个、每个点位讲什么、哪些数据可用</td><td>水墨笔触算法、山形生成、树的绘制、雾与水的表现</td></tr>
+        <tr><td>实地调研：村内走访、村级调研反馈表取得</td><td>公开资料搜集与来源标注、理论原文查证</td></tr>
+        <tr><td>资料核实：逐条核对数字与出处，核不到的一律不用</td><td>文档排版、数据表格整理</td></tr>
+        <tr><td>文字表述与定稿：设计说明全文、站内文案取舍</td><td>无</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      全部代码与文档在 GitHub 公开仓库中可查，提交历史完整可追溯。如对分工有疑问，可对照提交记录核实。
+    </p>
+  </section>
+
+  <footer class="rp-foot">
+    <p>
+      作品地址：<a href="https://liangshan.tt2.li/">liangshan.tt2.li</a> ·
+      开源仓库：<a href="https://github.com/NLPark-Cran/liangshan-20-aholo">github.com/NLPark-Cran/liangshan-20-aholo</a>
+    </p>
+    <p>
+      群核科技 Aholo 全球 3D AI 黑客松 · 参赛作品
+    </p>
+  </footer>
+
+</main>
+
+</body>
+</html>

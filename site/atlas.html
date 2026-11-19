@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4efe4">
+<title>浙江微缩地形 · 3D 展台</title>
+<meta name="description" content="浙江几处乡村与海岛的微缩地形，拖动即走，点开可看这一处到底改了什么。">
+<meta name="author" content="陈镜宇">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/atlas.css">
+</head>
+<body>
+
+<div id="boot"><div class="boot__inner">
+  <div class="boot__title">展台就位中</div>
+  <div class="boot__bar"></div>
+</div></div>
+
+<!-- 3D 舞台：占满视口，是这一页的主体 -->
+<canvas id="stage" aria-label="浙江几处乡村与海岛的微缩三维地形，可拖动旋转、滚轮缩放，左右方向键切换点位"></canvas>
+
+<!-- 顶栏：退路与状态 -->
+<header class="top">
+  <a class="top__back" href="index.html" aria-label="返回长卷">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <path d="M11 3H4v12h7M4 9h10M10 5.5 14 9l-4 3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>长卷</span>
+  </a>
+  <h1 class="top__title">微缩地形</h1>
+  <div id="hud" class="hud" aria-live="polite"></div>
+</header>
+
+<!-- 当前点位的标题与一句话，压在舞台上 -->
+<div class="mark" id="mark" aria-live="polite">
+  <p class="mark__region"></p>
+  <h2 class="mark__name"></h2>
+  <p class="mark__tag"></p>
+</div>
+
+<!-- 资料卡：浮在左下，可收起 -->
+<aside class="card" id="card" aria-label="点位资料">
+  <button class="card__toggle" id="card-toggle" aria-expanded="true" aria-controls="card-body">
+    <span class="card__toggle-t">这一处改了什么</span>
+    <svg class="card__chev" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M2 5l5 5 5-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="card__body" id="card-body"></div>
+</aside>
+
+<!-- 索引：底部胶片条 -->
+<nav class="film" id="film" aria-label="点位索引"></nav>
+
+<!-- 操作提示，首次出现后淡出 -->
+<p class="hint" id="hint">拖动旋转 · 滚轮缩放 · ← → 切换</p>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/loaders/": "./vendor/three/loaders/"
+  }
+}
+</script>
+<script type="module" src="js/atlas3d.js"></script>
+</body>
+</html>

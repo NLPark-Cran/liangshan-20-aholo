@@ -1,0 +1,434 @@
+/* ══════════════════════════════════════════════════════════════
+   atlas.css — 3D 展台
+   舞台占满视口；资料浮在左下；索引是底部胶片条。
+   颜色字号全部取自 base.css 的设计令牌。
+   ══════════════════════════════════════════════════════════════ */
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+:root {
+  /* 胶片条高度，资料卡的底边按它退让，两张不会叠 */
+  --film-h: 4.6rem;
+}
+
+/* 舞台：整屏，是这一页唯一的主体 */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+#stage:active { cursor: grabbing; }
+
+/* ── 顶栏 ──────────────────────────────────────────────── */
+.top {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--s4);
+  padding: var(--s4) clamp(var(--s4), 3vw, var(--s8));
+  pointer-events: none;
+}
+.top > * { pointer-events: auto; }
+
+.top__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-tiny);
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+  text-decoration: none;
+  transition: color 0.24s var(--ease-scroll);
+}
+.top__back:hover { color: var(--cinnabar); }
+
+.top__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--t-small);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--ink-700);
+  text-indent: 0.24em;
+  text-align: center;
+}
+
+.hud {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  font-size: var(--t-tiny);
+  letter-spacing: 0.04em;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.hud b { color: var(--ink-500); font-weight: 500; }
+.hud__bar {
+  display: inline-block;
+  width: 44px;
+  height: 1px;
+  background: var(--ink-150);
+  position: relative;
+  overflow: hidden;
+}
+.hud__bar > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--cinnabar);
+  transition: width 0.6s var(--ease-scroll);
+}
+
+/* ── 点位标题：压在上方偏左，与资料卡同一视线 ────────── */
+.mark {
+  position: fixed;
+  z-index: 15;
+  left: clamp(var(--s4), 4vw, var(--s12));
+  top: clamp(4rem, 13vh, 8rem);
+  max-width: min(30rem, 46vw);
+  pointer-events: none;
+}
+.mark__region {
+  margin: 0 0 var(--s2);
+  font-size: var(--t-tiny);
+  letter-spacing: 0.18em;
+  color: var(--ink-300);
+}
+.mark__name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  color: var(--ink-900);
+}
+.mark__tag {
+  margin: var(--s3) 0 0;
+  font-size: var(--t-small);
+  line-height: 1.7;
+  color: var(--ink-500);
+  max-width: 22em;
+}
+
+/* 换点位时的入场，只动 opacity 和位移，不做弹跳 */
+.mark.is-swap .mark__name,
+.mark.is-swap .mark__tag,
+.mark.is-swap .mark__region {
+  animation: rise 0.62s var(--ease-in) both;
+}
+.mark.is-swap .mark__tag { animation-delay: 0.05s; }
+.mark.is-swap .mark__region { animation-delay: 0.1s; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── 资料卡 ────────────────────────────────────────────── */
+.card {
+  position: fixed;
+  z-index: 18;
+  left: clamp(var(--s4), 4vw, var(--s12));
+  /* 底边压在胶片条之上，两张不叠 */
+  bottom: calc(var(--film-h) + var(--s3));
+  width: min(27rem, 40vw);
+  max-height: min(44vh, 25rem);
+  display: flex;
+  flex-direction: column;
+  background: rgba(250, 246, 237, 0.9);
+  backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid var(--ink-150);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6) inset,
+              0 18px 48px -28px rgba(28, 31, 29, 0.42);
+}
+
+.card__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border: 0;
+  border-bottom: 1px solid var(--ink-150);
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink-500);
+  text-align: left;
+  transition: color 0.22s var(--ease-scroll);
+}
+.card__toggle:hover { color: var(--cinnabar); }
+.card__toggle-t {
+  font-size: var(--t-tiny);
+  letter-spacing: 0.12em;
+}
+.card__chev {
+  flex: none;
+  transition: transform 0.32s var(--ease-scroll);
+}
+.card[data-open="false"] .card__chev { transform: rotate(-90deg); }
+
+.card__body {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--s4);
+  scrollbar-width: thin;
+}
+.card[data-open="false"] .card__body { display: none; }
+
+/* 卡内：数据行 */
+.card__lead {
+  margin: 0 0 var(--s4);
+  font-size: var(--t-small);
+  line-height: 1.8;
+  color: var(--ink-500);
+}
+
+.rows { margin: 0 0 var(--s4); border-top: 1px solid var(--ink-150); }
+.row {
+  display: grid;
+  grid-template-columns: 6.6em minmax(0, 1fr);
+  gap: 2px var(--s3);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--ink-150);
+  align-items: baseline;
+}
+.row dt {
+  font-size: var(--t-tiny);
+  letter-spacing: 0.04em;
+  color: var(--ink-300);
+}
+.row dd {
+  margin: 0;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s3);
+}
+.row dd b {
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+.row dd span {
+  font-size: var(--t-tiny);
+  line-height: 1.65;
+  color: var(--ink-500);
+}
+.row dd i {
+  font-style: normal;
+  font-size: var(--t-tiny);
+  color: var(--ink-300);
+}
+
+/* 卡内：引语 */
+.quote {
+  margin: 0;
+  padding: 0 0 0 var(--s4);
+  border-left: 2px solid var(--cinnabar);
+}
+.quote p {
+  margin: 0 0 var(--s2);
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  line-height: 1.85;
+  color: var(--ink-700);
+}
+.quote cite {
+  font-style: normal;
+  font-size: var(--t-tiny);
+  letter-spacing: 0.02em;
+  color: var(--ink-300);
+}
+
+/* 本组自撰的札记，与引语区分开 */
+.note {
+  margin: var(--s4) 0 0;
+  padding: 0 0 0 var(--s4);
+  border-left: 2px solid var(--ink-150);
+}
+.note p {
+  margin: 0 0 var(--s2);
+  font-size: var(--t-small);
+  line-height: 1.8;
+  color: var(--ink-500);
+}
+.note cite {
+  font-style: normal;
+  font-size: var(--t-tiny);
+  color: var(--ink-300);
+}
+
+/* ── 底部胶片条 ───────────────────────────────────────── */
+.film {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 16;
+  display: flex;
+  gap: var(--s1);
+  height: var(--film-h);
+  padding: 0 clamp(var(--s4), 3vw, var(--s8));
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+  pointer-events: none;
+}
+.film::-webkit-scrollbar { display: none; }
+.film > * { pointer-events: auto; }
+
+.film__item {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  min-width: 5rem;
+  padding: var(--s2) var(--s3);
+  border: 0;
+  border-top: 1px solid var(--ink-150);
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: var(--ink-300);
+  transition: color 0.26s var(--ease-scroll), border-color 0.26s var(--ease-scroll);
+}
+.film__item:hover { color: var(--ink-500); }
+.film__item.is-on {
+  color: var(--ink-900);
+  border-color: var(--cinnabar);
+}
+.film__name {
+  font-family: var(--font-serif);
+  font-size: var(--t-small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.film__region {
+  font-size: var(--t-tiny);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+/* 未就位的点位，用一个更浅的说明，不显示 × 之类的符号 */
+.film__item[data-state="loading"] .film__name { color: var(--ink-150); }
+
+/* ── 操作提示 ─────────────────────────────────────────── */
+.hint {
+  position: fixed;
+  z-index: 12;
+  right: clamp(var(--s4), 3vw, var(--s8));
+  bottom: calc(var(--s12) + var(--s4));
+  margin: 0;
+  font-size: var(--t-tiny);
+  letter-spacing: 0.06em;
+  color: var(--ink-150);
+  transition: opacity 0.9s var(--ease-scroll);
+  pointer-events: none;
+}
+.hint.is-off { opacity: 0; }
+
+/* ── 载入 ─────────────────────────────────────────────── */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  transition: opacity 0.6s var(--ease-scroll), visibility 0.6s;
+}
+#boot.is-done { opacity: 0; visibility: hidden; }
+.boot__inner { text-align: center; }
+.boot__title {
+  font-family: var(--font-serif);
+  font-size: var(--t-body);
+  letter-spacing: 0.3em;
+  color: var(--ink-300);
+  text-indent: 0.3em;
+}
+.boot__bar {
+  width: 120px;
+  height: 1px;
+  background: var(--ink-150);
+  margin: var(--s4) auto 0;
+  overflow: hidden;
+  position: relative;
+}
+.boot__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--cinnabar);
+  animation: sweep 1.15s var(--ease-scroll) infinite;
+  transform-origin: left;
+}
+@keyframes sweep {
+  0% { transform: translateX(-100%) scaleX(0.35); }
+  55% { transform: translateX(20%) scaleX(0.75); }
+  100% { transform: translateX(100%) scaleX(0.35); }
+}
+
+/* ── 窄屏：卡片变成可抽拉的底部抽屉 ──────────────────── */
+@media (max-width: 860px) {
+  :root { --film-h: 3.6rem; }
+
+  .mark {
+    left: var(--s4);
+    top: 3.9rem;
+    max-width: calc(100vw - var(--s8));
+  }
+  .mark__name { font-size: clamp(1.55rem, 6.4vw, 2.1rem); }
+  .mark__tag { font-size: var(--t-tiny); margin-top: var(--s2); }
+
+  /* 抽屉：默认收起，收起时只占一个条 */
+  .card {
+    left: var(--s3);
+    right: var(--s3);
+    bottom: calc(var(--film-h) + var(--s2));
+    width: auto;
+    max-height: 46vh;
+    border: 1px solid var(--ink-150);
+    border-radius: 2px;
+  }
+
+  .film {
+    height: var(--film-h);
+    padding: 0 var(--s3);
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .film::-webkit-scrollbar { display: none; }
+  .film__item { min-width: auto; padding: var(--s2); }
+  .film__region { display: none; }
+  .hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot__bar::after { animation: none; transform: scaleX(1); }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

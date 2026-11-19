@@ -1,0 +1,272 @@
+{
+ "cdn": "https://cdn.jsdelivr.net/gh/alchaincyf/huashu-bird-sticker@main",
+ "license": "CC BY 4.0",
+ "source": "https://github.com/alchaincyf/huashu-bird-sticker",
+ "species": {
+  "灰脸鵟鹰": {
+   "file": "stickers/Accipitriformes/Accipitridae/Butastur_indicus.webp",
+   "sci": "",
+   "en": "Grey-faced Buzzard"
+  },
+  "凤头蜂鹰": {
+   "file": "stickers/Accipitriformes/Accipitridae/Pernis_ptilorhynchus.webp",
+   "sci": "",
+   "en": "Crested Honey Buzzard"
+  },
+  "日本松雀鹰": {
+   "file": "stickers/Accipitriformes/Accipitridae/Tachyspiza_gularis.webp",
+   "sci": "",
+   "en": "Japanese Sparrowhawk"
+  },
+  "赤腹鹰": {
+   "file": "stickers/Accipitriformes/Accipitridae/Tachyspiza_soloensis.webp",
+   "sci": "",
+   "en": "Chinese Sparrowhawk"
+  },
+  "蛇雕": {
+   "file": "stickers/Accipitriformes/Accipitridae/Spilornis_cheela.webp",
+   "sci": "",
+   "en": "Crested Serpent Eagle"
+  },
+  "乌雕": {
+   "file": "stickers/Accipitriformes/Accipitridae/Clanga_clanga.webp",
+   "sci": "",
+   "en": "Greater Spotted Eagle"
+  },
+  "绿眉鸭": {
+   "file": "stickers/Anseriformes/Anatidae/Mareca_americana.webp",
+   "sci": "",
+   "en": "American Wigeon"
+  },
+  "鸳鸯": {
+   "file": "stickers/Anseriformes/Anatidae/Aix_galericulata.webp",
+   "sci": "",
+   "en": "Mandarin Duck"
+  },
+  "普通鸬鹚": {
+   "file": "stickers/Suliformes/Phalacrocoracidae/Phalacrocorax_carbo.webp",
+   "sci": "",
+   "en": "Great Cormorant"
+  },
+  "白鹭": {
+   "file": "stickers/Pelecaniformes/Ardeidae/Egretta_garzetta.webp",
+   "sci": "",
+   "en": "Little Egret"
+  },
+  "苍鹭": {
+   "file": "stickers/Pelecaniformes/Ardeidae/Ardea_cinerea.webp",
+   "sci": "",
+   "en": "Grey Heron"
+  },
+  "中华秋沙鸭": {
+   "file": "stickers/Anseriformes/Anatidae/Mergus_squamatus.webp",
+   "sci": "",
+   "en": "Scaly-sided Merganser"
+  },
+  "白鹡鸰": {
+   "file": "stickers/Passeriformes/Motacillidae/Motacilla_alba.webp",
+   "sci": "",
+   "en": "White Wagtail"
+  },
+  "北红尾鸲": {
+   "file": "stickers/Passeriformes/Muscicapidae/Phoenicurus_auroreus.webp",
+   "sci": "",
+   "en": "Daurian Redstart"
+  },
+  "小䴙䴘": {
+   "file": "stickers/Podicipediformes/Podicipedidae/Tachybaptus_ruficollis.webp",
+   "sci": "",
+   "en": "Little Grebe"
+  },
+  "扇尾沙锥": {
+   "file": "stickers/Charadriiformes/Scolopacidae/Gallinago_gallinago.webp",
+   "sci": "",
+   "en": "Common Snipe"
+  },
+  "短耳鸮": {
+   "file": "stickers/Strigiformes/Strigidae/Asio_flammeus.webp",
+   "sci": "",
+   "en": "Short-eared Owl"
+  },
+  "东方白鹳": {
+   "file": "stickers/Ciconiiformes/Ciconiidae/Ciconia_boyciana.webp",
+   "sci": "",
+   "en": "Oriental Stork"
+  },
+  "白头鹎": {
+   "file": "stickers/Passeriformes/Pycnonotidae/Pycnonotus_sinensis.webp",
+   "sci": "",
+   "en": "Light-vented Bulbul"
+  },
+  "棕背伯劳": {
+   "file": "stickers/Passeriformes/Laniidae/Lanius_schach.webp",
+   "sci": "",
+   "en": "Long-tailed Shrike"
+  },
+  "黑水鸡": {
+   "file": "stickers/Gruiformes/Rallidae/Gallinula_chloropus.webp",
+   "sci": "",
+   "en": "Common Moorhen"
+  },
+  "普通翠鸟": {
+   "file": "stickers/Coraciiformes/Alcedinidae/Alcedo_atthis.webp",
+   "sci": "",
+   "en": "Common Kingfisher"
+  },
+  "震旦鸦雀": {
+   "file": "stickers/Passeriformes/Paradoxornithidae/Paradoxornis_heudei.webp",
+   "sci": "",
+   "en": "Reed Parrotbill"
+  },
+  "白胸翡翠": {
+   "file": "stickers/Coraciiformes/Alcedinidae/Halcyon_smyrnensis.webp",
+   "sci": "",
+   "en": "White-throated Kingfisher"
+  },
+  "黑脸琵鹭": {
+   "file": "stickers/Pelecaniformes/Threskiornithidae/Platalea_minor.webp",
+   "sci": "",
+   "en": "Black-faced Spoonbill"
+  },
+  "卷羽鹈鹕": {
+   "file": "stickers/Pelecaniformes/Pelecanidae/Pelecanus_crispus.webp",
+   "sci": "",
+   "en": "Dalmatian Pelican"
+  },
+  "反嘴鹬": {
+   "file": "stickers/Charadriiformes/Recurvirostridae/Recurvirostra_avosetta.webp",
+   "sci": "",
+   "en": "Pied Avocet"
+  },
+  "黑腹滨鹬": {
+   "file": "stickers/Charadriiformes/Scolopacidae/Calidris_alpina.webp",
+   "sci": "",
+   "en": "Dunlin"
+  },
+  "遗鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Ichthyaetus_relictus.webp",
+   "sci": "",
+   "en": "Relict Gull"
+  },
+  "黄嘴白鹭": {
+   "file": "stickers/Pelecaniformes/Ardeidae/Egretta_eulophotes.webp",
+   "sci": "",
+   "en": "Chinese Egret"
+  },
+  "中华凤头燕鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Thalasseus_bernsteini.webp",
+   "sci": "",
+   "en": "Chinese Crested Tern"
+  },
+  "大凤头燕鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Thalasseus_bergii.webp",
+   "sci": "",
+   "en": "Greater Crested Tern"
+  },
+  "黑尾鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Larus_crassirostris.webp",
+   "sci": "",
+   "en": "Black-tailed Gull"
+  },
+  "褐翅燕鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Onychoprion_anaethetus.webp",
+   "sci": "",
+   "en": "Bridled Tern"
+  },
+  "白额鹱": {
+   "file": "stickers/Procellariiformes/Procellariidae/Calonectris_leucomelas.webp",
+   "sci": "",
+   "en": "Streaked Shearwater"
+  },
+  "岩鹭": {
+   "file": "stickers/Pelecaniformes/Ardeidae/Egretta_sacra.webp",
+   "sci": "",
+   "en": "Pacific Reef Heron"
+  },
+  "鹗": {
+   "file": "stickers/Accipitriformes/Pandionidae/Pandion_haliaetus.webp",
+   "sci": "",
+   "en": "Osprey"
+  },
+  "游隼": {
+   "file": "stickers/Falconiformes/Falconidae/Falco_peregrinus.webp",
+   "sci": "",
+   "en": "Peregrine Falcon"
+  },
+  "白鹇": {
+   "file": "stickers/Galliformes/Phasianidae/Lophura_nycthemera.webp",
+   "sci": "",
+   "en": "Silver Pheasant"
+  },
+  "勺鸡": {
+   "file": "stickers/Galliformes/Phasianidae/Pucrasia_macrolopha.webp",
+   "sci": "",
+   "en": "Koklass Pheasant"
+  },
+  "红嘴蓝鹊": {
+   "file": "stickers/Passeriformes/Corvidae/Urocissa_erythroryncha.webp",
+   "sci": "",
+   "en": "Red-billed Blue Magpie"
+  },
+  "棕噪鹛": {
+   "file": "stickers/Passeriformes/Leiothrichidae/Pterorhinus_berthemyi.webp",
+   "sci": "",
+   "en": "Buffy Laughingthrush"
+  },
+  "白颈长尾雉": {
+   "file": "stickers/Galliformes/Phasianidae/Syrmaticus_ellioti.webp",
+   "sci": "",
+   "en": "Elliot's Pheasant"
+  },
+  "仙八色鸫": {
+   "file": "stickers/Passeriformes/Pittidae/Pitta_nympha.webp",
+   "sci": "",
+   "en": "Fairy Pitta"
+  },
+  "黄腹角雉": {
+   "file": "stickers/Galliformes/Phasianidae/Tragopan_caboti.webp",
+   "sci": "",
+   "en": "Cabot's Tragopan"
+  },
+  "灰胸竹鸡": {
+   "file": "stickers/Galliformes/Phasianidae/Bambusicola_thoracicus.webp",
+   "sci": "",
+   "en": "Chinese Bamboo Partridge"
+  },
+  "栗头鹟莺": {
+   "file": "stickers/Passeriformes/Phylloscopidae/Phylloscopus_castaniceps.webp",
+   "sci": "",
+   "en": "Chestnut-crowned Warbler"
+  },
+  "丽星鹩鹛": {
+   "file": "stickers/Passeriformes/Elachuridae/Elachura_formosa.webp",
+   "sci": "",
+   "en": "Spotted Elachura"
+  },
+  "白斑军舰鸟": {
+   "file": "stickers/Suliformes/Fregatidae/Fregata_ariel.webp",
+   "sci": "",
+   "en": "Lesser Frigatebird"
+  },
+  "褐鲣鸟": {
+   "file": "stickers/Suliformes/Sulidae/Sula_leucogaster.webp",
+   "sci": "",
+   "en": "Brown Booby"
+  },
+  "红脚鲣鸟": {
+   "file": "stickers/Suliformes/Sulidae/Sula_sula.webp",
+   "sci": "",
+   "en": "Red-footed Booby"
+  },
+  "中贼鸥": {
+   "file": "stickers/Charadriiformes/Stercorariidae/Stercorarius_pomarinus.webp",
+   "sci": "",
+   "en": "Pomarine Jaeger"
+  },
+  "白燕鸥": {
+   "file": "stickers/Charadriiformes/Laridae/Gygis_alba.webp",
+   "sci": "",
+   "en": "Atlantic White Tern"
+  }
+ }
+}

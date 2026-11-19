@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4efe4">
+<title>两山二十年 · 一张可以走进去的浙江生态地图</title>
+<meta name="description" content="「绿水青山就是金山银山」提出二十年，从浙江十处地方看生态文明怎么落在具体的山水和具体的人身上。">
+<meta name="author" content="陈镜宇">
+
+<!-- 鸟类贴纸走 jsDelivr CDN，提前建连省一个 RTT（观鸟手账专用） -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="两山二十年 · 一张可以走进去的浙江生态地图">
+<meta property="og:description" content="手卷、账本、鸟，三个尺度看同一件事。">
+<meta property="og:locale" content="zh_CN">
+
+<link rel="stylesheet" href="css/base.css?v=20261118a">
+<link rel="stylesheet" href="css/scroll.css?v=20261118a">
+<link rel="stylesheet" href="css/extra.css?v=20261118a">
+<link rel="stylesheet" href="css/games.css?v=20261118a">
+<link rel="stylesheet" href="css/auth.css?v=20261118a">
+</head>
+<body>
+
+<a class="skip" href="#scroll-anchor">跳到地图</a>
+
+<!-- 身份条 -->
+<div class="authbar" id="authbar" aria-live="polite"></div>
+
+<!-- 账号面板 -->
+<div class="authpanel" id="authpanel" role="dialog" aria-modal="true" aria-label="账号" hidden></div>
+
+<!-- 轻提示 -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- 加载态 -->
+<div class="boot" id="boot">
+  <div class="boot__ink" aria-hidden="true"></div>
+  <div class="boot__t">展卷</div>
+</div>
+
+<!-- ══════════════ 首屏 ══════════════ -->
+<header class="hero">
+  <canvas class="hero__bg" id="hero-bg" aria-hidden="true"></canvas>
+
+  <div class="hero__inner">
+    <div class="hero__left">
+      <p class="hero__kicker">互动式数字长卷 · 浙江生态地图</p>
+
+      <h1 class="hero__title">
+        两山<br>二十年
+      </h1>
+
+      <p class="hero__sub">一张可以走进去的浙江生态地图</p>
+
+      <p class="hero__lead">
+        <span class="hl">2005 年 8 月 15 日</span>，安吉余村。一座山被关掉了一半，
+        村里的账本从此换了一种算法。<br>
+        二十年后，浙江有十处地方可以拿来回答同一个问题：
+        <span class="hl">一座山值多少钱，要算到哪一年为止。</span>
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--seal" id="btn-atlas" href="atlas.html">进入 3D 展台</a>
+        <button class="btn btn--ghost" id="btn-enter">展 卷</button>
+        <button class="btn btn--ghost" id="btn-ledger">一亩山的账本</button>
+        <button class="btn btn--ghost" id="btn-birds">观鸟手账</button>
+        <button class="btn btn--ghost" id="btn-tern">等一只鸟回来</button>
+        <button class="btn btn--ghost" id="btn-stats">我的战绩</button>
+      </div>
+
+      <p class="hero__meta">
+        「绿水青山就是金山银山」理念提出二十周年 · 数字人文互动作品<br>
+        一座山值多少钱，要算到哪一年为止
+      </p>
+    </div>
+
+    <div class="hero__right" aria-hidden="true">
+      <div class="hero__verse">
+        绿水青山就是金山银山<br>
+        二十年间，山还是那座山<br>
+        算法已经换过了
+      </div>
+      <canvas class="hero__seal" id="hero-seal" aria-hidden="true"></canvas>
+    </div>
+  </div>
+
+  <div class="hero__hint">
+    <span>向下</span>
+    <svg width="16" height="22" viewBox="0 0 16 22" fill="none" aria-hidden="true">
+      <path d="M8 1v18M2 14l6 6 6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ══════════════ 长卷 ══════════════ -->
+<main id="scroll-anchor">
+  <section class="scroll" id="scroll" aria-label="浙江生态长卷">
+    <div class="scroll__hintbar" id="hintbar">拖动、滚动或用方向键展卷</div>
+
+    <div class="scroll__viewport" id="scroll-viewport" tabindex="0" role="application"
+         aria-label="可展卷的浙江生态手绘地图，用左右方向键在十处点位之间移动">
+      <div class="scroll__track" id="scroll-track"></div>
+    </div>
+
+    <nav class="scroll__rail" aria-label="点位导航">
+      <div class="scroll__line" id="rail-line"></div>
+
+      <div class="scroll__tools">
+        <button class="btn btn--ghost" id="btn-prev" aria-label="上一站">
+          <span>←</span>
+        </button>
+        <button class="btn btn--ghost" id="btn-next" aria-label="下一站">
+          <span>→</span>
+        </button>
+        <button class="btn btn--ghost" id="btn-export" aria-label="导出透明 PNG">
+          <span>导出 PNG</span>
+        </button>
+      </div>
+    </nav>
+  </section>
+
+  <!-- ══════════════ 尾页：设计说明 ══════════════ -->
+  <section class="colophon" id="colophon">
+    <div class="colophon__inner">
+      <div class="colophon__block">
+        <h2>展卷说明</h2>
+        <p>
+          中国画的观看方式是手卷：不是一眼看全，而是一段一段展开。
+          这幅图沿浙江的地理从左到右排开，各站之间保留真实的方位关系，
+          拖动它们，像沿着一条路走完。
+        </p>
+        <p>
+          这些地方对应生态文明建设的十种答案：一座被关掉的矿，
+          一条重新变清的溪，一片被让出来的林子，一层层没有荒掉的田，
+          一条花了十年治回来的河，一块被城里人认养的菜地，
+          一座把市中心最后一片湿地留下来的城市，一个给海水里的碳定价的岛，
+          一片塘泥壅桑、桑叶喂蚕、蚕沙喂鱼、几乎没有废弃物的圩田，
+          以及一个在 1993 年就给自己立了环保规矩的村。
+        </p>
+      </div>
+
+      <div class="colophon__block">
+        <h2>三个尺度</h2>
+        <h3>一 · 长卷 · 空间</h3>
+        <p>
+          一条横轴走完十处地方，看浙江做了什么。数据都标了出处，
+          能核到年份，核不到的会写明。
+        </p>
+
+        <h3>二 · 一亩山的账本 · 二十年</h3>
+        <p>
+          一座山从开矿到关矿再到复绿，中间那十几年最难。
+          这个推演把「关矿」做成一个不可逆的选择，让玩家自己扛一次当年那次掉下去。
+          参数是示意，不是真实账目。
+        </p>
+
+        <h3>三 · 鸟 · 一年一季</h3>
+        <p>
+          观鸟手账按真实地点和观测时间组织，稀有度取自真实记录频率。
+          台风过后偶尔会捞到不该出现的海鸟，这在观鸟圈里是真实的事。
+        </p>
+        <p>
+          「等一只鸟回来」讲的是另一种时间：中华凤头燕鸥在浙江的招引，
+          是人把假鸟和声音放上礁石，然后年年回去看它来不来。
+        </p>
+      </div>
+
+      <div class="colophon__block">
+        <h2>资料来源</h2>
+        <p>
+          站内每个数字都标了出处，在点位详情的每条数据下方。主要来源如下：
+        </p>
+        <ul class="srclist" id="srclist">
+          <li>余村：人民日报《余村潘家兄弟二十年》2025-08-14；求是《深度调研丨余村调查》2025-11；经济日报《青年人成了乡村带头人》2025-01-15；文化和旅游部首批「最佳旅游乡村」公告 2021-12-02</li>
+          <li>下姜村：淳安县政府《关于对县十七届人大五次会议第 44 号建议的答复》2026-06；杭州日报《杭州山海协作助山区县成「进步生」》2024-12-19；致公党杭州市委会调研 2025-06-06</li>
+          <li>钱江源：开化县人民政府《钱江源国家公园体制试点》2016-07-15；经济网《「华东绿肺」要建国家公园城市》2024-06-27；浙江省林业局、庆元融媒 2026-07-11</li>
+          <li>浦江：生态环境部《美丽河湖优秀案例 · 浦阳江（浦江段）》2023-10-27；浦江县《2024 年度环境质量公报》2025-07-15；人民网 2015-06-10</li>
+          <li>云和梯田：农村信息报《浙江省农业文化遗产保护大事记》2022-07-16；文化和旅游部《关于确定 21 家旅游景区为国家 5A 级旅游景区的公告》2024-02-06；人民网《丽水云和梯田捧回联合国大奖》2025-10-19；湖州市农业农村局全球重要农业文化遗产名录</li>
+          <li>新溪桥村：本组实地调研与村级调研反馈表</li>
+          <li>西溪湿地：人民网《我国首个国家湿地公园十周岁啦！》2015-02-25；杭州市林业水利局《湿地物语① 西溪湿地》2025；杭州网 2025-05-04；浙江省林业厅 2012-11-29</li>
+          <li>大陈岛：台州市人民政府《大陈岛》2024-09-04；浙江省住房和城乡建设厅《台州市椒江区大陈镇海岛绿能探索零碳美镇》2024-05-24；台州生态环境 2023-12-07；今日椒江 2023-11-27</li>
+          <li>桑基鱼塘：中国青年报·中青在线《浙江湖州桑基鱼塘被认定为全球重要农业文化遗产》2017-11-24；《中国水产》</li>
+          <li>滕头村：奉化区政府《美丽生态激活乡村发展动力》2023-06-30；奉化日报 2023-08-15、2025-08-20；中国宁波网 2008-12-15</li>
+          <li>浙江省行政边界：公开地理数据（阿里云 DataV）</li>
+          <li>领导人引语：核对自《习近平著作选读》第一卷、共产党员网全文、农业农村部转载座谈会通稿</li>
+        </ul>
+        <p class="src" style="margin-top:1rem">
+          凡未能核实的数字均未写入正文。核实过程见仓库 docs/research/ 目录。
+        </p>
+      </div>
+
+      <div class="colophon__block">
+        <h2>制作说明</h2>
+        <p>
+          地图、交互与视觉渲染由编程实现；选题立意、资料核实与文字表述由本人完成。
+          全部数据标注来源，凡未能核实的数字均不写入正文。
+        </p>
+      </div>
+
+      <p class="footnote">
+        群核科技 Aholo 全球 3D AI 黑客松 · 参赛作品
+      </p>
+    </div>
+  </section>
+</main>
+
+<!-- ══════════════ 点位详情覆盖层 ══════════════ -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="overlay-title" hidden>
+  <div class="overlay__bar">
+    <span class="overlay__crumb" id="overlay-crumb">第一站</span>
+    <button class="overlay__close" id="overlay-close">
+      收起 <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <div class="overlay__body" id="overlay-body"></div>
+</div>
+
+<!-- ══════════════ 账本覆盖层 ══════════════ -->
+<div class="overlay" id="ledgerlog" role="dialog" aria-modal="true" aria-label="一亩山的账本" hidden>
+  <div class="overlay__bar">
+    <span class="overlay__crumb">一亩山的账本 · 推演</span>
+    <button class="overlay__close" id="ledger-close">
+      收起 <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <div class="overlay__body">
+    <div class="g" id="lg-root">
+      <div class="g__stage">
+        <canvas id="ledger-canvas"></canvas>
+        <canvas id="ledger-3d" class="g__layer3d"></canvas>
+        <div class="g__badge" id="ledger-badge" hidden>群核 Lux3D 实时模型</div>
+      </div>
+      <div class="g__bar" id="ledger-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 观鸟手账覆盖层 ══════════════ -->
+<div class="overlay" id="birdlog" role="dialog" aria-modal="true" aria-label="观鸟观测手账" hidden>
+  <div class="overlay__bar">
+    <span class="overlay__crumb">观鸟观测手账</span>
+    <button class="overlay__close" id="bird-close">
+      收起 <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <div class="overlay__body">
+    <div class="g" id="bd-root">
+      <div class="g__stage" id="bird-stage">
+        <canvas id="bird-canvas"></canvas>
+        <p class="bd__hint" id="bird-hint">移动鼠标，用望远镜扫过去。看见鸟就停一下。</p>
+      </div>
+      <div class="g__bar" id="bird-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 燕鸥覆盖层 ══════════════ -->
+<div class="overlay" id="ternlog" role="dialog" aria-modal="true" aria-label="等一只鸟回来" hidden>
+  <div class="overlay__bar">
+    <span class="overlay__crumb">等一只鸟回来 · 燕鸥招引推演</span>
+    <button class="overlay__close" id="tern-close">
+      收起 <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <div class="overlay__body">
+    <div class="g" id="tn-root">
+      <div class="g__stage" id="tern-stage">
+        <canvas id="tern-canvas"></canvas>
+      </div>
+      <div class="g__bar" id="tern-panel"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ 战绩覆盖层 ══════════════ -->
+<div class="overlay" id="statslog" role="dialog" aria-modal="true" aria-label="战绩与排行" hidden>
+  <div class="overlay__bar">
+    <span class="overlay__crumb" id="stats-crumb">战绩与排行</span>
+    <button class="overlay__close" id="stats-close">
+      收起 <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <div class="overlay__body">
+    <div class="wrap" id="stats-body" style="padding:3rem 0 6rem"></div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/loaders/": "./vendor/three/loaders/"
+  }
+}
+</script>
+<script type="module" src="js/app.js?v=20261119a"></script>
+</body>
+</html>

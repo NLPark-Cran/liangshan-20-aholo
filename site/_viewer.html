@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;height:100%;background:#f2ece0;overflow:hidden}
+canvas{display:block;width:100%;height:100%}</style>
+<script type="importmap">
+{"imports":{"three":"/vendor/three/three.module.js","three/addons/":"/vendor/three/"}}
+</script>
+</head><body><canvas id="c"></canvas>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const r = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true });
+r.setPixelRatio(1);
+r.toneMapping = THREE.ACESFilmicToneMapping;
+const sc = new THREE.Scene();
+sc.background = new THREE.Color('#f2ece0');
+const pm = new THREE.PMREMGenerator(r);
+sc.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+sc.environmentIntensity = 0.45;
+const cam = new THREE.PerspectiveCamera(34, innerWidth / innerHeight, 0.1, 200);
+const k = new THREE.DirectionalLight('#fff8ec', 2.6);
+k.position.set(6, 12, 8);
+sc.add(k);
+sc.add(new THREE.HemisphereLight('#e6eef0', '#c8b79a', 1.0));
+sc.add(new THREE.AmbientLight('#ffffff', 0.2));
+
+const q = new URLSearchParams(location.search);
+const L = new GLTFLoader();
+L.setMeshoptDecoder(MeshoptDecoder);
+L.load(q.get('m'), (g) => {
+  const o = g.scene;
+  sc.add(o);
+  const b = new THREE.Box3().setFromObject(o);
+  const sz = b.getSize(new THREE.Vector3());
+  const c = b.getCenter(new THREE.Vector3());
+  const s = 2.5 / Math.max(sz.x, sz.z);
+  o.scale.setScalar(s);
+  o.position.set(-c.x * s, -b.min.y * s, -c.z * s);
+  o.rotation.y = Number(q.get('yaw') || '-0.22');
+  r.setSize(innerWidth, innerHeight, false);
+  cam.aspect = innerWidth / innerHeight;
+  cam.updateProjectionMatrix();
+  cam.position.set(0, 6.0, 7.4);
+  cam.lookAt(0, -0.15, 0);
+  r.render(sc, cam);
+  window.__ok = true;
+}, undefined, (e) => { window.__err = String(e); });
+</script></body></html>

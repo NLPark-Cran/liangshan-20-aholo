@@ -1,0 +1,913 @@
+/* ══════════════════════════════════════════════════════════════
+   extra.css — 观鸟手账、燕鸥小游戏、补充样式
+   ══════════════════════════════════════════════════════════════ */
+
+/* 需要头条新闻式强调的按钮 */
+.btn.is-on {
+  background: var(--ink-900);
+  color: var(--paper);
+  border-color: var(--ink-900);
+}
+
+.btn:disabled {
+  opacity: 0.36;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background: transparent;
+  color: var(--ink-500);
+  border-color: var(--ink-150);
+}
+
+/* ══════════════════════════════════════════════════════════
+   观鸟手账
+   ══════════════════════════════════════════════════════════ */
+
+.bird {
+  display: grid;
+  grid-template-columns: 268px minmax(0, 1fr);
+  min-height: 100%;
+}
+
+.bird__side {
+  border-right: 1px solid rgba(195, 198, 189, 0.65);
+  padding: var(--s6) var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  background: rgba(236, 228, 211, 0.3);
+}
+
+.bird__sidehead {
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid rgba(195, 198, 189, 0.7);
+}
+
+.bird__title {
+  font-family: var(--font-kai);
+  font-size: 1.24rem;
+  letter-spacing: 0.12em;
+}
+
+.bird__sub {
+  margin-top: 0.22rem;
+  font-family: var(--font-kai);
+  font-size: 0.8rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+}
+
+.bird__sites {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.sitechip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, border-color 0.2s;
+  border-radius: 0 2px 2px 0;
+}
+
+.sitechip:hover {
+  background: rgba(255, 253, 245, 0.75);
+}
+
+.sitechip.is-on {
+  border-left-color: var(--cinnabar);
+  background: rgba(255, 253, 245, 0.92);
+}
+
+.sitechip__n {
+  font-family: var(--font-kai);
+  font-size: 0.95rem;
+  color: var(--ink-900);
+  letter-spacing: 0.06em;
+}
+
+.sitechip__m {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  color: var(--ink-300);
+  letter-spacing: 0.04em;
+}
+
+.bird__prog {
+  padding-top: var(--s3);
+  border-top: 1px solid rgba(195, 198, 189, 0.7);
+}
+
+.bird__progt {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--ink-300);
+  letter-spacing: 0.08em;
+}
+
+.bird__progt b {
+  font-size: 0.95rem;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.bird__progt i {
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--ink-300);
+}
+
+.bird__bar {
+  height: 2px;
+  margin: 0.34rem 0 var(--s3);
+  background: rgba(195, 198, 189, 0.55);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bird__barfill {
+  height: 100%;
+  background: var(--cinnabar);
+  opacity: 0.6;
+  transition: width 0.7s var(--ease-in);
+}
+
+.bird__allbtn {
+  width: 100%;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+/* 主区 */
+.bird__main {
+  padding: clamp(var(--s6), 4vw, var(--s12)) clamp(var(--s4), 4vw, var(--s8));
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.bird__head {
+  max-width: 46em;
+}
+
+.bird__kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--ink-300);
+}
+
+.bird__place {
+  margin-top: 0.3rem;
+  font-family: var(--font-kai);
+  font-size: var(--t-h1);
+  letter-spacing: 0.1em;
+}
+
+.bird__note {
+  margin-top: var(--s2);
+  font-size: var(--t-body);
+  line-height: 1.95;
+  color: var(--ink-700);
+  max-width: 34em;
+}
+
+.bird__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s4);
+  margin-top: var(--s2);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--ink-300);
+  letter-spacing: 0.08em;
+}
+
+.bird__art {
+  display: block;
+  width: 100%;
+  height: clamp(150px, 24vh, 240px);
+  margin: var(--s6) 0;
+  border-radius: 2px;
+}
+
+.bird__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+}
+
+.bird__hint {
+  margin-top: var(--s4);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--ink-300);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  max-width: 32em;
+}
+
+/* ── 观测记录卡 ───────────────────────────────────── */
+
+.rec {
+  max-width: 780px;
+  padding: var(--s6);
+  background: rgba(255, 253, 245, 0.7);
+  border: 1px solid rgba(195, 198, 189, 0.8);
+  border-radius: 2px;
+  animation: fundIn 0.5s var(--ease-in) both;
+  position: relative;
+}
+
+.rec::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--rc, var(--bamboo));
+  opacity: 0.7;
+}
+
+.rec__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s4);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid rgba(195, 198, 189, 0.6);
+}
+
+.rec__rarity {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.rec__rlabel {
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  font-family: var(--font-kai);
+  font-size: 0.9rem;
+  color: var(--paper);
+  background: var(--rc);
+  border-radius: 2px;
+}
+
+.rec__rdesc {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+}
+
+.rec__typhoon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: var(--s3);
+  padding: 0.4rem 0.7rem;
+  background: rgba(177, 129, 63, 0.1);
+  border-left: 2px solid var(--ochre);
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--ink-500);
+  letter-spacing: 0.04em;
+}
+
+.rec__typhoontag {
+  font-weight: 600;
+  color: var(--ochre);
+}
+
+.rec__body {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: var(--s6);
+  margin-top: var(--s4);
+}
+
+.rec__birdart {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+}
+
+/* ── 鸟类贴纸（观鸟手账专用，CC BY 4.0） ──────────────────
+   轮廓永远垫在底层，贴纸盖在上面；
+   贴纸没加载出来就露出轮廓，不会留一块空白。
+   长卷的六个场景不使用这里任何东西。 */
+.rec__artwrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 2px;
+  overflow: hidden;
+  background: rgba(236, 228, 211, 0.5);
+}
+
+.rec__artwrap .rec__birdart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+.rec__birdpic {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6%;
+  transition: opacity 0.25s var(--ease-out);
+}
+
+.rec__birdpic.is-off {
+  opacity: 0;
+}
+
+.rec__credit {
+  margin-top: var(--s3);
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  line-height: 1.7;
+  color: var(--ink-300);
+}
+
+.rec__credit a {
+  color: var(--ink-300);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* 图鉴里的小图 */
+.cg__pic {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  margin-bottom: var(--s2);
+}
+
+.cg__pic--none {
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: var(--ink-150);
+  background: rgba(236, 228, 211, 0.55);
+  border-radius: 2px;
+}
+
+.rec__name {
+  font-family: var(--font-kai);
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-900);
+}
+
+.rec__en {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+  margin-bottom: var(--s3);
+}
+
+.rec__rows {
+  margin: 0;
+  display: grid;
+  gap: 0.44rem;
+}
+
+.rec__rows > div {
+  display: grid;
+  grid-template-columns: 3.2em minmax(0, 1fr);
+  gap: var(--s3);
+  align-items: baseline;
+}
+
+.rec__rows dt {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--ink-300);
+  letter-spacing: 0.1em;
+}
+
+.rec__rows dd {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--ink-700);
+}
+
+.rec__rows .dim {
+  color: var(--ink-300);
+  font-size: 0.8rem;
+}
+
+.rec__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s3);
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid rgba(195, 198, 189, 0.6);
+}
+
+/* ── 图鉴 ─────────────────────────────────────────── */
+
+.codex__head h3 {
+  font-family: var(--font-kai);
+  font-size: var(--t-h2);
+  letter-spacing: 0.1em;
+}
+
+.codex__head p {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--ink-300);
+  letter-spacing: 0.08em;
+  margin-top: 0.24rem;
+}
+
+.codex__group {
+  margin-top: var(--s8);
+}
+
+.codex__gh {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid rgba(195, 198, 189, 0.7);
+}
+
+.codex__gb {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  font-family: var(--font-kai);
+  font-size: 0.82rem;
+  color: var(--paper);
+  background: var(--rc);
+  border-radius: 2px;
+}
+
+.codex__gd {
+  font-family: var(--font-kai);
+  font-size: 0.86rem;
+  color: var(--ink-500);
+  letter-spacing: 0.06em;
+}
+
+.codex__gc {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.codex__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 2px;
+  margin-top: var(--s3);
+}
+
+.cg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(221, 210, 187, 0.22);
+  border-left: 2px solid transparent;
+}
+
+.cg.is-got {
+  background: rgba(255, 253, 245, 0.84);
+  border-left-color: var(--bamboo);
+}
+
+.cg__n {
+  font-family: var(--font-kai);
+  font-size: 0.92rem;
+  color: var(--ink-900);
+  letter-spacing: 0.04em;
+}
+
+.cg:not(.is-got) .cg__n {
+  color: var(--ink-300);
+}
+
+.cg__s {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  color: var(--ink-300);
+  letter-spacing: 0.04em;
+}
+
+.codex__foot {
+  margin-top: var(--s8);
+}
+
+/* ══════════════════════════════════════════════════════════
+   燕鸥小游戏
+   ══════════════════════════════════════════════════════════ */
+
+.tern__head {
+  flex: none;
+}
+
+.tern__title {
+  font-family: var(--font-kai);
+  font-size: var(--t-h1);
+  letter-spacing: 0.1em;
+}
+
+.tern__sub {
+  margin-top: 0.2rem;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--ink-300);
+  letter-spacing: 0.12em;
+}
+
+.tern__intro {
+  margin: var(--s4) 0 var(--s6);
+  max-width: 34em;
+}
+
+.tern__intro p {
+  font-size: var(--t-small);
+  line-height: 1.95;
+  color: var(--ink-500);
+}
+
+.tern__step {
+  margin-top: var(--s6);
+}
+
+.tern__st {
+  font-family: var(--font-kai);
+  font-size: 1.02rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-900);
+  margin-bottom: var(--s3);
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(195, 198, 189, 0.65);
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+/* 每个选项的耗电提示 */
+.tern__cost {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--ink-300);
+  font-weight: 400;
+}
+
+/* 预算条 */
+.tern__budget {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: var(--s4);
+  padding: 0.6rem 0.85rem;
+  background: rgba(109, 143, 138, 0.09);
+  border-left: 2px solid var(--water);
+  border-radius: 2px;
+}
+
+.tern__budget span {
+  font-size: 0.86rem;
+  color: var(--ink-500);
+}
+
+.tern__budget b {
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink-900);
+  letter-spacing: 0.02em;
+}
+
+.tern__budget i {
+  font-style: normal;
+  font-size: 0.78rem;
+  color: var(--ink-300);
+}
+
+.tern__budget.is-over {
+  background: rgba(157, 58, 48, 0.08);
+  border-left-color: var(--cinnabar);
+}
+
+.tern__budget.is-over b {
+  color: var(--cinnabar);
+}
+
+/* 选项里的耗电数字 */
+.opt__n em {
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--ink-300);
+  margin-left: 0.32rem;
+  vertical-align: 0.12em;
+}
+
+.tern__tip.is-warn {
+  color: var(--cinnabar);
+}
+
+.tern__opts {
+  display: grid;
+  gap: 2px;
+}
+
+.tern__opts--row {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.opt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  padding: 0.66rem 0.8rem;
+  text-align: left;
+  background: rgba(221, 210, 187, 0.2);
+  border: 1px solid transparent;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.opt:hover {
+  background: rgba(255, 253, 245, 0.8);
+}
+
+.opt.is-on {
+  background: rgba(255, 253, 245, 0.95);
+  border-color: rgba(157, 58, 48, 0.35);
+  border-left-color: var(--cinnabar);
+}
+
+.opt__n {
+  font-family: var(--font-kai);
+  font-size: 0.96rem;
+  color: var(--ink-900);
+  letter-spacing: 0.06em;
+}
+
+.opt__d {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.65;
+  color: var(--ink-500);
+}
+
+.opt__note {
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  color: var(--ink-300);
+  letter-spacing: 0.02em;
+  margin-top: 0.16rem;
+}
+
+.opt--sm {
+  padding: 0.5rem 0.66rem;
+}
+
+.tern__acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+  margin-top: var(--s8);
+  padding-top: var(--s4);
+  border-top: 1px solid rgba(195, 198, 189, 0.6);
+}
+
+.tern__tip {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+}
+
+.tern__tip--flow {
+  margin-top: var(--s4);
+  line-height: 1.8;
+  max-width: 32em;
+}
+
+.tern__result {
+  margin-top: var(--s6);
+}
+
+.tern__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s6);
+  padding: var(--s4) 0;
+  border-top: 1px solid rgba(195, 198, 189, 0.7);
+  border-bottom: 1px solid rgba(195, 198, 189, 0.7);
+}
+
+.tr {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+}
+
+.tr b {
+  font-size: 1.5rem;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.tr i {
+  font-style: normal;
+  font-size: 0.7rem;
+}
+
+.tern__resnote {
+  margin-top: var(--s4);
+  font-size: var(--t-small);
+  line-height: 2;
+  color: var(--ink-500);
+  max-width: 32em;
+}
+
+.tern__resnote.dim {
+  color: var(--ink-300);
+  font-size: 0.8rem;
+}
+
+/* 真实项目数据：和游戏结算的说明区分开，用一道细线压在上面 */
+.tern__resnote--fact {
+  margin-top: var(--s4);
+  padding-top: var(--s3);
+  border-top: 1px solid rgba(28, 31, 29, 0.12);
+  font-size: 0.8rem;
+  color: var(--ink-300);
+}
+
+.tern__calc {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: var(--s6);
+  padding: var(--s3) 0;
+  border-top: 1px dotted rgba(195, 198, 189, 0.9);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--ink-300);
+  letter-spacing: 0.08em;
+}
+
+.tern__calc b {
+  font-size: 1rem;
+  color: var(--ink-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.tern__timeline {
+  display: grid;
+  gap: 1px;
+  margin-top: var(--s6);
+}
+
+.tl {
+  display: grid;
+  grid-template-columns: 4.4em 1fr auto;
+  align-items: center;
+  gap: var(--s3);
+  padding: 0.44rem 0;
+  border-bottom: 1px dotted rgba(195, 198, 189, 0.85);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+}
+
+.tl__y {
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl__r {
+  color: var(--ink-500);
+}
+
+.tl__r.is-yes {
+  color: var(--bamboo);
+  font-weight: 600;
+}
+
+.tl__r.is-no {
+  color: var(--ochre);
+}
+
+.tl__n {
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ══════════════════════════════════════════════════════════
+   响应式
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 860px) {
+  .bird {
+    /* 必须是 minmax(0, 1fr)，不能写 1fr。
+       1fr 等于 minmax(auto, 1fr)，最小宽度由子元素撑开，
+       站点横向列表会把整个面板顶到 1000px 以上，窄屏直接溢出。 */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bird__side {
+    border-right: none;
+    border-bottom: 1px solid rgba(195, 198, 189, 0.65);
+    padding: var(--s4);
+  }
+
+  .bird__sites {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: var(--s2);
+    padding-bottom: 0.3rem;
+  }
+
+  .sitechip {
+    flex: none;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    border-radius: 2px 2px 0 0;
+  }
+
+  .sitechip.is-on {
+    border-left-color: transparent;
+    border-bottom-color: var(--cinnabar);
+  }
+
+  .rec__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rec__artwrap {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero__actions .btn {
+    flex: 1 1 calc(50% - var(--s3));
+    justify-content: center;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .codex__grid {
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  }
+}

@@ -1,0 +1,392 @@
+/* ══════════════════════════════════════════════════════════════
+   auth.css — 身份条、账号面板、轻提示
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 首屏右上角身份条 ───────────────────────────────── */
+
+.authbar {
+  position: fixed;
+  top: var(--s4);
+  right: var(--s4);
+  z-index: 60;
+  font-family: var(--font-sans);
+}
+
+.authbar__btn,
+.authbar__user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.36rem 0.8rem;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+  background: rgba(244, 239, 228, 0.86);
+  border: 1px solid var(--ink-150);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.22s;
+}
+
+.authbar__btn:hover,
+.authbar__user:hover {
+  color: var(--paper);
+  background: var(--ink-900);
+  border-color: var(--ink-900);
+}
+
+.authbar__sep {
+  opacity: 0.5;
+}
+
+.authbar__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.authbar__dot.is-guest {
+  background: var(--ochre);
+}
+
+.authbar__dot.is-member {
+  background: var(--bamboo);
+}
+
+.authbar__name {
+  max-width: 8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.authbar__tag {
+  font-size: 0.62rem;
+  padding: 0.05rem 0.3rem;
+  color: var(--ochre);
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+.authbar__user:hover .authbar__tag {
+  color: var(--paper);
+}
+
+.authbar__off {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-300);
+  padding: 0.3rem 0.7rem;
+  border: 1px dashed var(--ink-150);
+  border-radius: 999px;
+  background: rgba(244, 239, 228, 0.7);
+}
+
+@media (max-width: 560px) {
+  .authbar {
+    top: var(--s2);
+    right: var(--s2);
+  }
+  .authbar__btn,
+  .authbar__user {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.62rem;
+  }
+}
+
+/* ── 账号面板 ───────────────────────────────────────── */
+
+.authpanel {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  padding: var(--s4);
+  background: rgba(28, 31, 29, 0.42);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.24s;
+}
+
+.authpanel[hidden] {
+  display: none;
+}
+
+.authpanel.is-open {
+  opacity: 1;
+}
+
+.ap {
+  width: min(420px, 100%);
+  max-height: min(86vh, 680px);
+  overflow-y: auto;
+  padding: var(--s6);
+  background: var(--paper);
+  border: 1px solid var(--ink-150);
+  border-radius: 2px;
+  box-shadow: 0 18px 50px -12px rgba(28, 31, 29, 0.4);
+  transform: translateY(10px) scale(0.985);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.authpanel.is-open .ap {
+  transform: none;
+}
+
+.ap__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s4);
+}
+
+.ap__kicker {
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  letter-spacing: 0.3em;
+  color: var(--ink-300);
+}
+
+.ap__x {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  color: var(--ink-300);
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.ap__x:hover {
+  color: var(--ink-900);
+  background: rgba(221, 210, 187, 0.5);
+}
+
+.ap__title {
+  font-family: var(--font-kai);
+  font-size: 1.36rem;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--s3);
+}
+
+.ap__hello {
+  font-family: var(--font-kai);
+  font-size: 1.5rem;
+  letter-spacing: 0.06em;
+  color: var(--ink-900);
+  margin-bottom: var(--s3);
+}
+
+.ap__note {
+  font-size: 0.86rem;
+  line-height: 1.9;
+  color: var(--ink-500);
+  margin-bottom: var(--s4);
+}
+
+.ap__field {
+  display: block;
+  margin-bottom: var(--s3);
+}
+
+.ap__field span {
+  display: block;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-300);
+  margin-bottom: 0.3rem;
+}
+
+.ap__field input {
+  width: 100%;
+  padding: 0.56rem 0.7rem;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--ink-900);
+  background: rgba(255, 253, 245, 0.72);
+  border: 1px solid var(--ink-150);
+  border-radius: 1px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ap__field input:focus {
+  border-color: var(--ink-500);
+  background: #fffdf6;
+}
+
+.ap__field input::placeholder {
+  color: var(--ink-300);
+  opacity: 0.7;
+}
+
+.ap__err {
+  margin-bottom: var(--s3);
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--cinnabar);
+  background: rgba(157, 58, 48, 0.07);
+  border-left: 2px solid var(--cinnabar);
+}
+
+.ap__acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-top: var(--s4);
+}
+
+.ap__acts .btn {
+  font-size: 0.88rem;
+  padding: 0.5rem 1.1rem;
+}
+
+.ap__foot {
+  margin-top: var(--s4);
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--ink-300);
+}
+
+.ap__link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink-500);
+  font: inherit;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(90, 98, 91, 0.3);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.ap__link:hover {
+  color: var(--cinnabar);
+  border-color: var(--cinnabar);
+}
+
+.ap__dot2 {
+  margin: 0 0.5rem;
+  opacity: 0.4;
+}
+
+.ap__dl {
+  margin: 0 0 var(--s4);
+  display: grid;
+  gap: 0.4rem;
+}
+
+.ap__dl > div {
+  display: grid;
+  grid-template-columns: 4em minmax(0, 1fr);
+  gap: var(--s3);
+  align-items: baseline;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dotted rgba(195, 198, 189, 0.8);
+}
+
+.ap__dl dt {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-300);
+}
+
+.ap__dl dd {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  color: var(--ink-700);
+  word-break: break-all;
+}
+
+/* ── 轻提示 ─────────────────────────────────────────── */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 8vh;
+  transform: translate(-50%, 12px);
+  z-index: 130;
+  padding: 0.56rem 1.2rem;
+  font-family: var(--font-kai);
+  font-size: 0.92rem;
+  letter-spacing: 0.06em;
+  color: var(--paper);
+  background: rgba(28, 31, 29, 0.9);
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(4px);
+}
+
+.toast.is-on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ── 排行榜与个人战绩 ───────────────────────────────── */
+
+.rank {
+  display: grid;
+  gap: var(--s6);
+  max-width: 780px;
+}
+
+.rank__sec h3 {
+  font-family: var(--font-kai);
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid rgba(195, 198, 189, 0.8);
+  margin-bottom: var(--s3);
+}
+
+.rank__row {
+  display: grid;
+  grid-template-columns: 2em minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--s3);
+  padding: 0.42rem 0;
+  border-bottom: 1px dotted rgba(195, 198, 189, 0.7);
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+}
+
+.rank__i {
+  color: var(--ink-300);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank__n {
+  color: var(--ink-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rank__v {
+  color: var(--ink-900);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.rank__empty {
+  padding: var(--s4) 0;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--ink-300);
+  letter-spacing: 0.06em;
+}

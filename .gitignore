@@ -1,0 +1,19 @@
+# 依赖与构建产物
+node_modules/
+dist/
+dist.tar.gz
+
+# 本地开发
+.DS_Store
+Thumbs.db
+*.log
+
+# 未压缩的原始 3D 资产（单件十几到二十几 MB，不入库）
+*.glb
+!site/assets/models/*.min.glb
+
+# 凭据
+.env
+.env.*
+*.pem
+*.key
