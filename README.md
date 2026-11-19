@@ -123,8 +123,12 @@ python -m http.server 8080
 
 ## 许可
 
-仓库暂未附带开源许可证。若要正式开源，需要在这里选定一个 OSI 认证的许可证并放入 `LICENSE`。
+本站代码以 **GNU Affero General Public License v3.0** 发布，全文见 `LICENSE`。
 
-`site/assets/models/` 下的 3D 资产由 Aholo Lux3D 生成，其使用遵循群核科技 Aholo 平台的服务条款。
+选 AGPL 而不是宽松许可，是刻意的：它要求分发或通过网络提供服务时，必须把修改后的源码同样以 AGPL 开放。也就是说，拿走这套代码改成闭源商业产品是不允许的。
+
+需要注意的一点：AGPL 约束的是**代码**。作品的选题、叙事结构、文案与视觉设计作为内容，另受著作权保护，不在本许可证的授权范围内。
+
+`site/assets/models/` 下的 3D 资产由 Aholo Lux3D 生成，其使用遵循群核科技 Aholo 平台的服务条款。这部分不因本仓库的 AGPL 而改变授权状态。
 
 `data/birds.js`、`data/zhejiang.json` 中的事实性数据来自公开来源，逐条出处见各文件内注释与报告页的数据表。
