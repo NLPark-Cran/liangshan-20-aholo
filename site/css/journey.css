@@ -1263,6 +1263,242 @@
   }
 }
 
+/* Ego 真实体验复审：主要设问先于补充资料出现。 */
+.journey__chapters[hidden] + .journey__content {
+  grid-column: 1 / -1;
+}
+
+.journey__cover {
+  width: 100%;
+}
+
+.journey__cover h1 {
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+}
+
+.journey__chapter-page {
+  width: min(100%, 76rem);
+  padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 3rem) calc(var(--s12) + env(safe-area-inset-bottom));
+}
+
+.journey__chapter-grid {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.72fr) minmax(0, 1.28fr);
+  align-items: start;
+  gap: clamp(1.5rem, 3.5vw, 4rem);
+}
+
+.journey__chapter-header {
+  padding: 0;
+  border: 0;
+}
+
+.journey__chapter-header h1 {
+  font-size: clamp(1.65rem, 2.6vw, 2.3rem);
+  line-height: 1.35;
+}
+
+.journey__decision-area {
+  min-width: 0;
+}
+
+.journey__context,
+.journey__evidence {
+  margin-top: var(--s3);
+}
+
+.journey__context summary,
+.journey__evidence summary,
+.journey__reflection summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink-500);
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--ink-150);
+  text-underline-offset: 0.3em;
+}
+
+.journey__context p {
+  margin-top: var(--s2);
+  line-height: 1.8;
+}
+
+.journey__evidence {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.journey__evidence-body {
+  margin-top: var(--s2);
+  padding: var(--s3) var(--s4);
+  background: rgba(236, 228, 211, 0.42);
+  border-top: 1px solid var(--paper-deep);
+}
+
+.journey__decision-tabs {
+  margin: 0 0 var(--s4);
+}
+
+.journey__situation {
+  margin-top: var(--s3);
+  line-height: 1.8;
+}
+
+.journey__question {
+  margin: var(--s3) 0 var(--s4);
+  line-height: 1.65;
+}
+
+.journey__choices {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s2);
+}
+
+.journey__choice {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: start;
+  min-height: 0;
+  padding: var(--s3);
+}
+
+.journey__choice-arrow {
+  grid-column: 3;
+  align-self: center;
+}
+
+.journey__choice-copy strong {
+  font-size: 1rem;
+}
+
+.journey__choice-copy > span {
+  line-height: 1.65;
+}
+
+.journey__result-card,
+.journey__effect-block,
+.journey__reflection {
+  margin-top: var(--s4);
+}
+
+.journey__result-card {
+  padding: var(--s4);
+}
+
+.journey__reflection {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.journey__reflection p {
+  margin-top: var(--s2);
+  padding: var(--s4);
+  background: rgba(109, 143, 138, 0.07);
+  border: 1px solid rgba(109, 143, 138, 0.22);
+}
+
+.journey__result-actions {
+  margin-top: var(--s4);
+}
+
+@media (max-width: 1100px) {
+  .journey__chapter-grid {
+    grid-template-columns: minmax(13rem, 0.65fr) minmax(0, 1.35fr);
+    gap: var(--s4);
+  }
+
+  .journey__chapter-page {
+    padding-top: var(--s4);
+  }
+
+  .journey__chapter-header h1 {
+    font-size: clamp(1.55rem, 3.4vw, 2rem);
+  }
+
+  .journey__context,
+  .journey__evidence {
+    display: inline-block;
+    width: calc(50% - var(--s1));
+    margin-top: var(--s2);
+    vertical-align: top;
+  }
+
+  .journey__context[open],
+  .journey__evidence[open] {
+    display: block;
+    width: 100%;
+  }
+
+  .journey__chapters li {
+    flex-basis: min(56vw, 11rem);
+  }
+
+  .journey__chapter {
+    padding: var(--s1) var(--s2);
+  }
+
+  .journey__chapter-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .journey__decision-tab {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .journey__chapter-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .journey__chapter-page {
+    padding: var(--s4) var(--s4) calc(var(--s12) + env(safe-area-inset-bottom));
+  }
+
+  .journey__chapter-grid {
+    gap: var(--s3);
+  }
+
+  .journey__chapter-header h1 {
+    font-size: 1.65rem;
+  }
+
+  .journey__subtitle {
+    margin-top: var(--s1);
+    font-size: 1rem;
+  }
+
+  .journey__decision-tabs {
+    margin-bottom: var(--s3);
+  }
+
+  .journey__decision-tab {
+    padding: var(--s2) var(--s3);
+  }
+
+  .journey__situation {
+    line-height: 1.75;
+  }
+
+  .journey__question {
+    font-size: 1.05rem;
+  }
+
+  .journey__choice-copy > span {
+    line-height: 1.6;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .journey,
   .journey *,

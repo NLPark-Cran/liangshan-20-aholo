@@ -1091,6 +1091,83 @@
   }
 }
 
+/* Ego 真实体验复审：场景选择与年度主操作优先，统计资料随后阅读。 */
+.lgc-intro {
+  padding: var(--s2) 0 var(--s4);
+}
+
+.lgc-title {
+  max-width: none;
+  margin-bottom: var(--s2);
+  font-size: clamp(1.55rem, 2.5vw, 2.1rem) !important;
+  line-height: 1.4 !important;
+}
+
+.lgc-intro > p:not(.lgc-kicker) {
+  line-height: 1.7;
+}
+
+.lgc-modelnote {
+  margin-top: var(--s2);
+  padding-top: var(--s2);
+}
+
+.lgc-scenarios {
+  gap: var(--s2);
+}
+
+.lgc-scenario {
+  gap: var(--s1);
+  padding: var(--s3);
+}
+
+.lgc-scenario__best {
+  padding-top: var(--s1);
+}
+
+.lgc-progress {
+  margin-bottom: var(--s3);
+}
+
+.lgc-options {
+  margin-top: var(--s3);
+}
+
+.lgc-option {
+  min-height: 8rem;
+}
+
+.lgc-stats,
+.lgc-stagegoal {
+  margin-top: var(--s4);
+}
+
+.lgc-yearresult .lgc-ledgerline {
+  margin: var(--s3) 0;
+}
+
+@media (max-width: 520px) {
+  #lg-root {
+    grid-template-rows: minmax(11rem, 24vh) auto;
+  }
+
+  #lg-root .g__stage {
+    min-height: 11rem;
+  }
+
+  .lgc-scenario__params {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .lgc-scenario__target {
+    line-height: 1.5;
+  }
+
+  .lgc-option {
+    min-height: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lgc > *,
   .lgc-meter i {

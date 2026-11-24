@@ -447,16 +447,16 @@ function renderCover(progress) {
         <span><strong>20</strong> 问治理选择</span>
         <span><strong>60</strong> 项具体行动</span>
       </div>
-      <div class="journey__scenario">
-        <span class="journey__section-label">设问边界</span>
-        <p>${esc(intro.scenarioNote)}</p>
-        <p>选项与结果用于理解治理权衡。三维数值只汇总本局选择，不构成现实预测或能力评价。</p>
-      </div>
       <div class="journey__actions">
         ${primary}
         ${hasArchive ? '<button class="journey__button journey__button--quiet" type="button" data-action="review">从第一章回看</button>' : ''}
       </div>
       ${hasArchive ? `<p class="journey__archive">本地已有 ${progress.answered} 条答案，完成 ${progress.completedChapters} 章。回看改选后，汇总会自动更新。</p>` : '<p class="journey__archive">答案仅保存在当前浏览器，不收集个人信息。</p>'}
+      <div class="journey__scenario">
+        <span class="journey__section-label">设问边界</span>
+        <p>${esc(intro.scenarioNote)}</p>
+        <p>选项与结果用于理解治理权衡。三维数值只汇总本局选择，不构成现实预测或能力评价。</p>
+      </div>
     </div>`;
 }
 
@@ -484,32 +484,42 @@ function renderChapter() {
   const decision = chapter.decisions[view.decisionIndex];
   const choice = selectedChoice(decision);
   const globalIndex = view.chapterIndex * DECISIONS_PER_CHAPTER + view.decisionIndex;
+  const contextOpen = window.matchMedia('(min-width: 1101px)').matches ? ' open' : '';
 
   return `
     <div class="journey__page journey__chapter-page">
-      <header class="journey__chapter-header">
-        <p class="journey__kicker">第 ${pad(view.chapterIndex + 1)} 章 · ${esc(chapter.siteId)}</p>
-        <h1 data-journey-heading tabindex="-1">${esc(chapter.title)}</h1>
-        <p class="journey__subtitle">${esc(chapter.subtitle)}</p>
-        <p class="journey__context">${esc(chapter.context)}</p>
-        <aside class="journey__evidence" aria-label="事实依据">
-          <span class="journey__section-label">事实依据</span>
-          <p>${esc(chapter.evidence.text)}</p>
-          <p class="journey__source">来源：${esc(chapter.evidence.source)}</p>
-        </aside>
-      </header>
+      <div class="journey__chapter-grid">
+        <header class="journey__chapter-header">
+          <p class="journey__kicker">第 ${pad(view.chapterIndex + 1)} 章 · ${esc(chapter.siteId)}</p>
+          <h1 data-journey-heading tabindex="-1">${esc(chapter.title)}</h1>
+          <p class="journey__subtitle">${esc(chapter.subtitle)}</p>
+          <details class="journey__context"${contextOpen}>
+            <summary>本章背景</summary>
+            <p>${esc(chapter.context)}</p>
+          </details>
+          <details class="journey__evidence">
+            <summary>事实依据与来源</summary>
+            <div class="journey__evidence-body">
+              <p>${esc(chapter.evidence.text)}</p>
+              <p class="journey__source">来源：${esc(chapter.evidence.source)}</p>
+            </div>
+          </details>
+        </header>
 
-      <div class="journey__decision-tabs" role="group" aria-label="本章设问">
-        ${chapter.decisions.map((item, index) => `
-          <button type="button" data-action="decision" data-decision-index="${index}"
-            class="journey__decision-tab${index === view.decisionIndex ? ' is-current' : ''}"
-            ${index === view.decisionIndex ? 'aria-current="step"' : ''}
-            aria-label="第 ${index + 1} 问，${selectedChoice(item) ? '已答' : '未答'}">
-            <span>设问 ${pad(index + 1)}</span><span>${selectedChoice(item) ? '已记录' : '待选择'}</span>
-          </button>`).join('')}
+        <div class="journey__decision-area">
+          <div class="journey__decision-tabs" role="group" aria-label="本章设问">
+            ${chapter.decisions.map((item, index) => `
+              <button type="button" data-action="decision" data-decision-index="${index}"
+                class="journey__decision-tab${index === view.decisionIndex ? ' is-current' : ''}"
+                ${index === view.decisionIndex ? 'aria-current="step"' : ''}
+                aria-label="第 ${index + 1} 问，${selectedChoice(item) ? '已答' : '未答'}">
+                <span>设问 ${pad(index + 1)}</span><span>${selectedChoice(item) ? '已记录' : '待选择'}</span>
+              </button>`).join('')}
+          </div>
+
+          ${choice && !view.editing ? renderResult(chapter, decision, choice, globalIndex) : renderChoices(decision, choice, globalIndex)}
+        </div>
       </div>
-
-      ${choice && !view.editing ? renderResult(chapter, decision, choice, globalIndex) : renderChoices(decision, choice, globalIndex)}
     </div>`;
 }
 
@@ -546,6 +556,13 @@ function renderResult(chapter, decision, choice, globalIndex) {
         <span class="journey__section-label">本局行动 · ${esc(choice.label)}</span>
         <p>${esc(choice.result)}</p>
       </div>
+      <div class="journey__result-actions">
+        <button class="journey__text-button" type="button" data-action="edit">改选此问</button>
+        <div>
+          ${globalIndex > 0 ? '<button class="journey__button journey__button--quiet" type="button" data-action="previous">上一问</button>' : ''}
+          <button class="journey__button" type="button" data-action="next">${nextLabel}</button>
+        </div>
+      </div>
       <div class="journey__effect-block">
         <span class="journey__section-label">本次三维变化</span>
         <ul class="journey__effects">
@@ -556,17 +573,10 @@ function renderResult(chapter, decision, choice, globalIndex) {
         </ul>
         <p class="journey__effect-note">变化值用于本局对照，不代表真实地区的因果预测。</p>
       </div>
-      <aside class="journey__reflection">
-        <span class="journey__section-label">本章反思</span>
+      <details class="journey__reflection">
+        <summary>本章反思</summary>
         <p>${esc(chapter.reflection)}</p>
-      </aside>
-      <div class="journey__result-actions">
-        <button class="journey__text-button" type="button" data-action="edit">改选此问</button>
-        <div>
-          ${globalIndex > 0 ? '<button class="journey__button journey__button--quiet" type="button" data-action="previous">上一问</button>' : ''}
-          <button class="journey__button" type="button" data-action="next">${nextLabel}</button>
-        </div>
-      </div>
+      </details>
     </article>`;
 }
 

@@ -484,7 +484,7 @@ function scenarioPickerHTML() {
               <span>民生 <b>${scenario.initial.livelihood}</b></span>
             </span>
             <span class="lgc-scenario__target">2025 示意目标：资金 ${scenario.targets.cash} · 山体 ${scenario.targets.mountain} · 民生 ${scenario.targets.livelihood} · 欠账不超过 ${scenario.targets.maxDebt}</span>
-            <span class="lgc-scenario__best">${best ? `本机最佳：达成 ${best.metGoals}/5 项目标，资金 ${best.final.cash}，山体 ${best.final.mountain}，民生 ${best.final.livelihood}` : '本机还没有完成记录'}</span>
+            ${best ? `<span class="lgc-scenario__best">本机最佳：达成 ${best.metGoals}/5 项目标，资金 ${best.final.cash}，山体 ${best.final.mountain}，民生 ${best.final.livelihood}</span>` : ''}
             <span class="lgc-scenario__cta">开始逐年治理 <i aria-hidden="true">→</i></span>
           </button>
         `;
@@ -661,7 +661,7 @@ function renderCampaign() {
       : C.phase === 'event'
         ? eventDecisionHTML()
         : yearResultHTML();
-    content = `${campaignProgressHTML()}${campaignStageHTML()}${campaignStatsHTML()}${phaseContent}`;
+    content = `${campaignProgressHTML()}${phaseContent}${campaignStatsHTML()}${campaignStageHTML()}`;
   }
   panelEl.innerHTML = `<div class="lgc">${campaignHeaderHTML()}${content}</div>`;
   bindModeSwitches();
