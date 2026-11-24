@@ -18,6 +18,7 @@ import { exportMap, downloadBlob } from './export.js';
 import POINTS, { SITE_COORDS } from './points.js';
 import { initAuthUI, openPanel, toast } from './auth-ui.js';
 import { initStats, openStats } from './stats-ui.js';
+import { initJourney, openJourney } from './journey.js';
 import { auth, track } from './api.js';
 
 /* ────────────────────────── 全局状态 ────────────────────────── */
@@ -25,8 +26,11 @@ import { auth, track } from './api.js';
 const state = {
   geojson: null,
   scroll: null,
+  scrollPoints: [],
   panels: [],
   mapper: null,
+  resizeObserver: null,
+  lastViewport: { w: 0, h: 0 },
 };
 
 /* ────────────────────────── 启动 ────────────────────────── */
@@ -39,8 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function init() {
-  // 任何一步卡住都不该让「展卷」遮罩一直盖着首屏。
-  // 最多等 4 秒，然后把页面交给用户。
+  // 首屏与长卷先建立，身份接口和地理数据在后台并行，不阻塞入口。
   const failsafe = setTimeout(() => {
     document.getElementById('boot')?.classList.add('is-done');
   }, 4000);
@@ -48,33 +51,40 @@ async function init() {
   initOverlay();
   initBirding();
   initStats();
+  initJourney();
   bindGlobalButtons();
   drawHeroArt();
   drawHeroSeal();
-
-  // 身份放在最前面：三个小游戏都要用到登录态
-  await initAuthUI();
-  bindAuthEvents();
-
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const res = await fetch('data/zhejiang.json', { signal: ctrl.signal });
-    state.geojson = await res.json();
-    clearTimeout(t);
-  } catch (e) {
-    console.error('边界数据载入失败', e);
-  }
-
   buildScroll();
 
-  clearTimeout(failsafe);
-  setTimeout(() => document.getElementById('boot')?.classList.add('is-done'), 380);
+  const authTask = (async () => {
+    await initAuthUI();
+    bindAuthEvents();
+  })().catch((err) => console.error('身份模块载入失败', err));
 
-  // 首屏背景在布局稳定后补一次重绘，避免首帧拿到 0 尺寸
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => drawHeroArt());
-  });
+  const geoTask = (async () => {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch('data/zhejiang.json', { signal: ctrl.signal });
+      if (!res.ok) throw new Error(`边界数据 HTTP ${res.status}`);
+      state.geojson = await res.json();
+      clearTimeout(timer);
+      const cover = state.panels[0];
+      if (cover) {
+        cover.drawn = false;
+        ensurePanelDrawn(0);
+      }
+    } catch (err) {
+      console.error('边界数据载入失败', err);
+    }
+  })();
+
+  clearTimeout(failsafe);
+  requestAnimationFrame(() => document.getElementById('boot')?.classList.add('is-done'));
+  await Promise.allSettled([authTask, geoTask]);
+
+  requestAnimationFrame(() => requestAnimationFrame(drawHeroArt));
 }
 
 /** 登录态变化时，把已经开着的面板同步一下 */
@@ -98,9 +108,14 @@ function bindAuthEvents() {
 
 function bindGlobalButtons() {
   document.getElementById('btn-enter')?.addEventListener('click', () => {
-    document.getElementById('scroll-anchor')?.scrollIntoView({ behavior: 'smooth' });
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.getElementById('scroll-anchor')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
   });
 
+  document.getElementById('btn-journey')?.addEventListener('click', () => {
+    track('open:journey');
+    openJourney();
+  });
   document.getElementById('btn-ledger')?.addEventListener('click', () => {
     track('open:ledger');
     openLedger();
@@ -166,41 +181,82 @@ function drawHeroArt() {
   ctx.clearRect(0, 0, w, h);
 
   const rnd = mulberry32(2005);
+  const mobile = w < 820;
+  const startX = mobile ? 0 : w * 0.31;
+  const artW = w - startX;
 
-  // 三层远山，圆润的峰而不是尖角
+  // 左侧保留文字安全区，右侧用近山、水岸与树丛形成视觉主角。
   for (let l = 0; l < 3; l++) {
-    const baseY = h * (0.66 + l * 0.085);
-    const amp = h * (0.14 - l * 0.028);
+    const baseY = h * ((mobile ? 0.7 : 0.58) + l * 0.075);
+    const amp = h * (0.13 - l * 0.024);
     const pts = [];
-    const seg = 60;
     const p1 = rnd() * 6.28;
     const p2 = rnd() * 6.28;
-    const p3 = rnd() * 6.28;
-    for (let i = 0; i <= seg; i++) {
-      const t = i / seg;
-      const x = w * t;
-      // 三个不同频率的正弦叠加，出圆缓的山脊
-      const ridge =
-        Math.sin(t * 3.1 + p1) * 0.55 +
-        Math.sin(t * 6.4 + p2) * 0.28 +
-        Math.sin(t * 11.3 + p3) * 0.12;
-      pts.push([x, baseY - (ridge * 0.5 + 0.5) * amp]);
+    for (let i = 0; i <= 56; i++) {
+      const t = i / 56;
+      const ridge = Math.sin(t * 3.2 + p1) * 0.58 + Math.sin(t * 7.1 + p2) * 0.25;
+      pts.push([startX + artW * t, baseY - (ridge * 0.5 + 0.5) * amp]);
     }
     inkStroke(ctx, pts, {
       color: '#3a3f38',
-      width: 1.9 - l * 0.36,
-      alpha: 0.19 - l * 0.048,
+      width: 1.8 - l * 0.3,
+      alpha: 0.16 + l * 0.045,
       seed: 300 + l * 17,
-      wobble: 1.5,
-      dry: 0.18,
+      wobble: 1.4,
+      dry: 0.2,
       layers: 1,
       taper: false,
       step: 5,
     });
   }
 
-  // 一层淡淡的雾，把山脚化开
-  mistBand(ctx, { x: 0, y: h * 0.72, w, h: h * 0.1 }, { alpha: 0.55, seed: 77, bands: 4 });
+  const ridge = [];
+  for (let i = 0; i <= 64; i++) {
+    const t = i / 64;
+    const peakA = Math.exp(-Math.pow((t - 0.64) * 5.2, 2));
+    const peakB = Math.exp(-Math.pow((t - 0.88) * 7.4, 2)) * 0.64;
+    const foot = Math.sin(t * Math.PI) * 0.08;
+    ridge.push([startX + artW * t, h * 0.82 - (peakA + peakB + foot) * h * (mobile ? 0.2 : 0.31)]);
+  }
+  ctx.beginPath();
+  ctx.moveTo(ridge[0][0], ridge[0][1]);
+  ridge.slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
+  ctx.lineTo(w, h * 0.92);
+  ctx.lineTo(startX, h * 0.92);
+  ctx.closePath();
+  const wash = ctx.createLinearGradient(0, h * 0.48, 0, h * 0.92);
+  wash.addColorStop(0, 'rgba(58,63,56,0.12)');
+  wash.addColorStop(0.62, 'rgba(90,98,91,0.07)');
+  wash.addColorStop(1, 'rgba(244,239,228,0)');
+  ctx.fillStyle = wash;
+  ctx.fill();
+  inkStroke(ctx, ridge, {
+    color: '#333a35', width: 2.3, alpha: 0.34, seed: 514,
+    wobble: 1.1, dry: 0.17, layers: 2, taper: false, step: 4,
+  });
+
+  for (let i = 0; i < 7; i++) {
+    const x = startX + artW * (0.53 + i * 0.067);
+    const y = h * (0.79 + (i % 3) * 0.014);
+    treeClump(ctx, x, y, {
+      r: Math.max(12, artW * (0.018 + (i % 2) * 0.006)),
+      count: 24 + (i % 3) * 8,
+      seed: 610 + i * 19,
+      alpha: 0.24,
+    });
+  }
+
+  mistBand(ctx, { x: startX, y: h * 0.69, w: artW, h: h * 0.1 }, { alpha: 0.48, seed: 77, bands: 4 });
+
+  for (let i = 0; i < 12; i++) {
+    const y = h * (0.86 + i * 0.007);
+    const x = startX + artW * (0.12 + rnd() * 0.26);
+    const len = artW * (0.26 + rnd() * 0.48);
+    inkStroke(ctx, [[x, y], [x + len * 0.52, y - 1.5], [x + len, y]], {
+      color: '#6d8f8a', width: 0.85, alpha: 0.17, seed: 900 + i,
+      dry: 0.35, layers: 1, taper: false, step: 9,
+    });
+  }
 }
 
 function drawHeroSeal() {
@@ -229,12 +285,9 @@ function buildScroll() {
   const viewport = document.getElementById('scroll-viewport');
   const track = document.getElementById('scroll-track');
   const railLine = document.getElementById('rail-line');
-  if (!viewport || !track) return;
+  if (!viewport || !track || state.scroll) return;
 
   const vw = viewport.clientWidth || window.innerWidth;
-  const vh = viewport.clientHeight || window.innerHeight * 0.82;
-
-  // 段：卷首 + 各站 + 卷尾
   const segs = [
     { kind: 'cover', title: '卷首', w: vw * 1.05 },
     ...POINTS.map((p, i) => ({ kind: 'site', point: p, index: i, title: p.name, w: vw })),
@@ -243,8 +296,8 @@ function buildScroll() {
 
   state.panels = [];
   track.innerHTML = '';
-
   let acc = 0;
+
   segs.forEach((seg, si) => {
     const el = document.createElement('section');
     el.className = `panel panel--${seg.kind}`;
@@ -255,7 +308,6 @@ function buildScroll() {
     cv.className = 'panel__canvas';
     el.appendChild(cv);
 
-    // 站点段：竖排站名 + 一句题
     if (seg.kind === 'site') {
       const cap = document.createElement('div');
       cap.className = 'panel__cap';
@@ -266,7 +318,6 @@ function buildScroll() {
         <span class="panel__tagline">${seg.point.tag}</span>
       `;
       el.appendChild(cap);
-
       cap.querySelector('[data-open]')?.addEventListener('click', () => {
         openSite(seg.point, seg.index, POINTS.length);
       });
@@ -288,64 +339,64 @@ function buildScroll() {
       cap.className = 'panel__tail';
       cap.innerHTML = `
         <p class="panel__tailtext">山还是那座山<br>算法已经换过了</p>
-        <p class="panel__tailnote">向右已到头，也可按 Esc 收起</p>
+        <p class="panel__tailnote">长卷看完，可以继续读展卷说明，也可以回到卷首。</p>
+        <div class="panel__tailactions">
+          <button class="btn btn--ghost" type="button" data-tail="colophon">继续阅读</button>
+          <button class="btn btn--ghost" type="button" data-tail="cover">返回卷首</button>
+        </div>
       `;
       el.appendChild(cap);
+      cap.querySelector('[data-tail="colophon"]')?.addEventListener('click', () => {
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.getElementById('colophon')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+      });
+      cap.querySelector('[data-tail="cover"]')?.addEventListener('click', () => state.scroll?.focusIndex(0, true));
     }
 
     track.appendChild(el);
-
     state.panels.push({
       el,
       canvas: cv,
       kind: seg.kind,
       point: seg.point,
+      index: seg.index ?? si,
       x: acc,
       w: seg.w,
+      drawn: false,
+      drawQueued: false,
     });
-
     acc += seg.w;
   });
 
-  // 逐段绘制
-  state.panels.forEach((p, i) => {
-    requestAnimationFrame(() => drawPanel(p, state.panels.length, i));
-  });
+  state.scrollPoints = state.panels.map((panel) => ({
+    id: panel.point?.id || panel.kind,
+    name: panel.point?.name || (panel.kind === 'cover' ? '卷首' : '卷尾'),
+    u: (panel.x + panel.w / 2) / acc,
+  }));
 
-  // 点位位置 = 站点段中心
-  const pointsForScroll = POINTS.map((p, i) => {
-    const panel = state.panels[i + 1]; // 卷首占 0
-    return { id: p.id, name: p.name, u: (panel.x + panel.w / 2) / acc };
-  });
-  // 卷首也作为一个停靠点
-  pointsForScroll.unshift({
-    id: 'cover',
-    name: '卷首',
-    u: state.panels[0].w / 2 / acc,
-  });
-
-  // 刻度
   if (railLine) {
     railLine.innerHTML = '';
-    pointsForScroll.forEach((p, i) => {
+    state.scrollPoints.forEach((p, i) => {
       const tick = document.createElement('button');
       tick.className = 'scroll__tick';
-      tick.style.left = `${p.u * 100}%`;
+      tick.type = 'button';
       tick.setAttribute('aria-label', `跳到 ${p.name}`);
       tick.addEventListener('click', () => state.scroll?.focusIndex(i, true));
       railLine.appendChild(tick);
     });
   }
+  layoutScrollTicks();
 
   state.scroll = new ScrollController({
     viewport,
     track,
-    points: pointsForScroll,
-    onFocus: (i) => {
-      document.querySelectorAll('.scroll__tick').forEach((t, k) => t.classList.toggle('is-active', k === i));
-    },
+    points: state.scrollPoints,
+    onFocus: updateScrollFocus,
+    onInteraction: () => document.getElementById('hintbar')?.classList.add('is-hidden'),
     onProgress: (ratio) => {
-      railLine?.style.setProperty('--progress', `${Math.max(0, Math.min(100, ratio * 100))}%`);
+      const value = Math.max(0, Math.min(1, ratio || 0));
+      railLine?.style.setProperty('--progress', `${value * 100}%`);
+      railLine?.style.setProperty('--progress-scale', String(value));
     },
   });
 
@@ -353,26 +404,105 @@ function buildScroll() {
     state.scroll.focusIndex(Math.max(0, state.scroll.activeIndex - 1), true);
   });
   document.getElementById('btn-next')?.addEventListener('click', () => {
-    state.scroll.focusIndex(Math.min(pointsForScroll.length - 1, state.scroll.activeIndex + 1), true);
+    state.scroll.focusIndex(Math.min(state.scrollPoints.length - 1, state.scroll.activeIndex + 1), true);
   });
 
-  setTimeout(() => document.getElementById('hintbar')?.classList.add('is-hidden'), 5200);
+  updateScrollFocus(0);
+  state.scroll.focusIndex(0, false);
+  observeScrollResize(viewport);
+}
 
-  // 尺寸变化时重排
-  let t = null;
-  window.addEventListener('resize', () => {
-    if (t) clearTimeout(t);
-    t = setTimeout(() => {
-      const oldIdx = state.scroll?.activeIndex ?? 0;
-      buildScroll();
-      setTimeout(() => state.scroll?.focusIndex(oldIdx, false), 60);
-    }, 260);
+function updateScrollFocus(index) {
+  document.querySelectorAll('.scroll__tick').forEach((tick, i) => {
+    tick.classList.toggle('is-active', i === index);
+    if (i === index) tick.setAttribute('aria-current', 'step');
+    else tick.removeAttribute('aria-current');
   });
+  state.panels.forEach((panel, i) => panel.el.classList.toggle('is-current', i === index));
+  const prev = document.getElementById('btn-prev');
+  const next = document.getElementById('btn-next');
+  if (prev) prev.disabled = index <= 0;
+  if (next) next.disabled = index >= state.scrollPoints.length - 1;
+  [index - 1, index, index + 1].forEach(ensurePanelDrawn);
+}
 
-  // 卷首绘制完成后滚到第一站
-  setTimeout(() => {
-    if (state.scroll) state.scroll.focusIndex(0, false);
-  }, 120);
+function ensurePanelDrawn(index) {
+  const panel = state.panels[index];
+  if (!panel || panel.drawn || panel.drawQueued) return;
+  panel.drawQueued = true;
+  requestAnimationFrame(() => {
+    panel.drawQueued = false;
+    drawPanel(panel, state.panels.length, index);
+    panel.drawn = true;
+    if (panel.kind === 'cover') addCoverMarks(panel);
+  });
+}
+
+function layoutScrollTicks() {
+  const viewport = document.getElementById('scroll-viewport');
+  const vw = viewport?.clientWidth || window.innerWidth;
+  const trackW = state.panels.reduce((sum, panel) => sum + panel.w, 0);
+  const distance = Math.max(1, trackW - vw);
+  document.querySelectorAll('.scroll__tick').forEach((tick, i) => {
+    const panel = state.panels[i];
+    if (!panel) return;
+    const target = Math.max(vw - trackW, Math.min(0, vw * 0.5 - (panel.x + panel.w / 2)));
+    tick.style.left = `${(Math.abs(target) / distance) * 100}%`;
+  });
+}
+
+function addCoverMarks(panel) {
+  panel.el.querySelectorAll('.panel__mapmark').forEach((el) => el.remove());
+  if (!state.mapper) return;
+  POINTS.forEach((point, i) => {
+    const coord = SITE_COORDS[point.id];
+    if (!coord) return;
+    const [x, y] = state.mapper.toPx(coord.lon, coord.lat);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'panel__mapmark';
+    btn.dataset.open = String(i);
+    btn.style.left = `${x}px`;
+    btn.style.top = `${y}px`;
+    btn.textContent = String(i + 1).padStart(2, '0');
+    btn.setAttribute('aria-label', `打开${point.name}`);
+    btn.addEventListener('click', () => openSite(point, i, POINTS.length));
+    panel.el.appendChild(btn);
+  });
+}
+
+function observeScrollResize(viewport) {
+  state.resizeObserver?.disconnect();
+  state.lastViewport = { w: viewport.clientWidth, h: viewport.clientHeight };
+  let frame = null;
+  state.resizeObserver = new ResizeObserver((entries) => {
+    const rect = entries[0]?.contentRect;
+    if (!rect) return;
+    const last = state.lastViewport;
+    if (Math.abs(rect.width - last.w) < 2 && Math.abs(rect.height - last.h) < 2) return;
+    state.lastViewport = { w: rect.width, h: rect.height };
+    if (frame) cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      const vw = viewport.clientWidth || window.innerWidth;
+      let acc = 0;
+      state.panels.forEach((panel, i) => {
+        panel.w = vw * (i === 0 ? 1.05 : i === state.panels.length - 1 ? 0.78 : 1);
+        panel.x = acc;
+        panel.el.style.width = `${panel.w}px`;
+        panel.drawn = false;
+        acc += panel.w;
+      });
+      state.scrollPoints.forEach((point, i) => {
+        const panel = state.panels[i];
+        point.u = (panel.x + panel.w / 2) / acc;
+      });
+      layoutScrollTicks();
+      state.scroll?.measure();
+      state.scroll?.focusIndex(state.scroll.activeIndex, false);
+      updateScrollFocus(state.scroll?.activeIndex || 0);
+    });
+  });
+  state.resizeObserver.observe(viewport);
 }
 
 /* ────────────────────────── 单段绘制 ────────────────────────── */
@@ -591,6 +721,11 @@ async function doExport() {
   }
 }
 
+let heroResizeFrame = null;
 window.addEventListener('resize', () => {
-  drawHeroArt();
+  if (heroResizeFrame) cancelAnimationFrame(heroResizeFrame);
+  heroResizeFrame = requestAnimationFrame(() => {
+    heroResizeFrame = null;
+    drawHeroArt();
+  });
 });

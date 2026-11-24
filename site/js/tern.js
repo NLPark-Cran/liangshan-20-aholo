@@ -50,17 +50,139 @@ const SOUNDS = [
   { id: 'all', name: '整夜不停', value: 0.9, cost: 3, desc: '效果最好，最耗电' },
 ];
 
+const PROTECTIONS = [
+  {
+    id: 'none',
+    name: '暂不增设',
+    cost: 0,
+    desc: '预算全给招引，当季风险不获缓解',
+    weather: 0,
+    guard: 0,
+  },
+  {
+    id: 'weather',
+    name: '加固与遮护',
+    cost: 1,
+    desc: '重点缓解风暴、涨潮和降雨',
+    weather: 0.72,
+    guard: 0.08,
+  },
+  {
+    id: 'warden',
+    name: '巡护与缓冲',
+    cost: 1,
+    desc: '重点缓解人为干扰和捕食压力',
+    weather: 0.08,
+    guard: 0.72,
+  },
+  {
+    id: 'combined',
+    name: '综合值守',
+    cost: 2,
+    desc: '两类风险都照顾，但单项缓解较弱',
+    weather: 0.48,
+    guard: 0.48,
+  },
+];
+
+/* 五季风险只服务玩法，不对应真实年份、预报或项目统计。 */
+const RISKS = [
+  {
+    id: 'storm',
+    name: '风暴潮',
+    group: 'weather',
+    desc: '强风叠着高潮位，低平巢区更敏感。',
+    arrival: 0.12,
+    nesting: 0.34,
+    rearing: 0.24,
+    exposure: { reef: 0.55, sandbar: 1, pond: 0.7 },
+  },
+  {
+    id: 'disturbance',
+    name: '人为干扰',
+    group: 'guard',
+    desc: '船与近岸活动影响停留，靠近人的位置更敏感。',
+    arrival: 0.18,
+    nesting: 0.18,
+    rearing: 0.12,
+    exposure: { reef: 0.35, sandbar: 0.7, pond: 1 },
+  },
+  {
+    id: 'predator',
+    name: '捕食压力',
+    group: 'guard',
+    desc: '风险更多落在卵和雏鸟上，巡护能保住已有巢群。',
+    arrival: 0.03,
+    nesting: 0.22,
+    rearing: 0.38,
+    exposure: { reef: 0.85, sandbar: 0.75, pond: 1 },
+  },
+  {
+    id: 'tide',
+    name: '连续涨潮',
+    group: 'weather',
+    desc: '巢区可用空间收窄，沙洲需要优先加固。',
+    arrival: 0.08,
+    nesting: 0.4,
+    rearing: 0.18,
+    exposure: { reef: 0.45, sandbar: 1, pond: 0.65 },
+  },
+  {
+    id: 'rain',
+    name: '持续降雨',
+    group: 'weather',
+    desc: '成鸟仍可能到达，遮护会影响巢与雏鸟的留存。',
+    arrival: 0.07,
+    nesting: 0.22,
+    rearing: 0.34,
+    exposure: { reef: 0.75, sandbar: 0.85, pond: 1 },
+  },
+];
+
 const BUDGET = 4;
 const MONTHS = ['四月', '五月', '六月', '七月', '八月'];
+const MAX_ARRIVAL = 0.68;
+
+function clamp(v, lo, hi) {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+function seededRandom(seed) {
+  let a = Number(seed) >>> 0;
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function makeRandom(seed) {
+  if (typeof seed === 'function') return seed;
+  if (seed !== undefined && seed !== null && Number.isFinite(Number(seed))) {
+    return seededRandom(seed);
+  }
+  return Math.random;
+}
+
+function percent(v) {
+  return `${Math.round(v * 100)}%`;
+}
+
+function points(v) {
+  return `${Math.round(v * 100)} 个百分点`;
+}
 
 /* ────────────────────────── 状态 ────────────────────────── */
 
-function newGame() {
+function newGame(seed) {
   return {
     round: 0,
     island: null,
     decoy: 'mid',
     sound: 'dusk',
+    protection: 'none',
     phase: 'choose', // choose | waiting | result | end
     birds: 0,
     nests: 0,
@@ -68,6 +190,11 @@ function newGame() {
     seasons: [],
     cap: null, // 这一季的结算摘要，用于浮层
     lastP: 0,
+    experience: 0,
+    colony: 0,
+    previousIsland: null,
+    seed,
+    rng: makeRandom(seed),
   };
 }
 
@@ -77,29 +204,48 @@ let panelEl = null;
 let rafId = null;
 let lastTernKey = '';
 let waitingUntil = 0;
+let waitingDuration = 2200;
+let seasonTimer = null;
 let animBirds = 0; // 用于让鸟一只一只落下来
 
 /* ────────────────────────── 入口 ────────────────────────── */
 
-export function openTern() {
+export function openTern(seed) {
   const ov = document.getElementById('ternlog');
   if (!ov) return;
+  clearSeasonTimer();
   ov.hidden = false;
   document.body.style.overflow = 'hidden';
   requestAnimationFrame(() => ov.classList.add('is-open'));
 
   canvasEl = document.getElementById('tern-canvas');
   panelEl = document.getElementById('tern-panel');
-  S = newGame();
+  const stage = document.getElementById('tern-stage');
+  if (stage && !stage.querySelector('#tn-risk')) {
+    const risk = document.createElement('div');
+    risk.id = 'tn-risk';
+    risk.className = 'tn__risk';
+    risk.setAttribute('aria-live', 'polite');
+    stage.appendChild(risk);
+  }
+  S = newGame(seed);
   lastTernKey = '';
   animBirds = 0;
   renderPanel();
   startLoop();
 }
 
+function clearSeasonTimer() {
+  if (seasonTimer) {
+    clearTimeout(seasonTimer);
+    seasonTimer = null;
+  }
+}
+
 export function closeTern() {
   const ov = document.getElementById('ternlog');
   if (!ov) return;
+  clearSeasonTimer();
   ov.classList.remove('is-open');
   document.body.style.overflow = '';
   if (rafId) {
@@ -128,7 +274,7 @@ function startLoop() {
       if (S.phase === 'waiting' && S.cap) {
         const total = S.cap.birds;
         const left = Math.max(0, waitingUntil - now);
-        const p = 1 - left / 2200;
+        const p = 1 - left / waitingDuration;
         animBirds = Math.round(total * Math.min(1, p));
       }
 
@@ -153,35 +299,92 @@ function startLoop() {
 function renderPanel() {
   if (!panelEl) return;
 
+  if (S.phase === 'end') renderEnd();
+  else if (S.phase === 'result') renderResult();
+  else if (S.phase === 'waiting') renderWaiting();
+  else renderChoose();
+  updateStageRisk();
+}
+
+function currentRisk() {
+  return RISKS[Math.min(S.round, RISKS.length - 1)];
+}
+
+function seasonFactors(island, decoy, sound, protection) {
+  const risk = currentRisk();
+  const exposure = risk.exposure[island.id] ?? 1;
+  const mitigation = protection[risk.group] || 0;
+  const mix = decoy.value + sound.value;
+  const base = Math.min(0.64, island.base * Math.pow(mix, 1.65) * 1.75);
+  const riskLoss = risk.arrival * exposure;
+  const protectionGain = riskLoss * mitigation;
+  const colony = S.previousIsland === island.id ? S.colony : 0;
+  const p = clamp(base - riskLoss + protectionGain + S.experience + colony, 0.04, MAX_ARRIVAL);
+  return {
+    base,
+    riskLoss,
+    protectionGain,
+    experience: S.experience,
+    colony,
+    exposure,
+    mitigation,
+    nestingLoss: risk.nesting * exposure * (1 - mitigation),
+    rearingLoss: risk.rearing * exposure * (1 - mitigation),
+    p,
+  };
+}
+
+function factorStrip(f) {
+  return `<div class="tn__factors" aria-label="本季示意概率拆解">
+    <span data-factor="base">基础 ${percent(f.base)}</span>
+    <span data-factor="risk">风险 −${points(f.riskLoss)}</span>
+    <span data-factor="protection">保护 +${points(f.protectionGain)}</span>
+    <span data-factor="experience">经验 +${points(f.experience)}</span>
+    <span data-factor="colony">群落 +${points(f.colony)}</span>
+  </div>`;
+}
+
+function updateStageRisk() {
+  const el = document.getElementById('tn-risk');
+  if (!el) return;
   if (S.phase === 'end') {
-    renderEnd();
+    el.innerHTML = `<span class="tn__risk-tag">五季示意复盘</span><strong>每个选择都留下了记录</strong><span>概率与数量仅用于玩法推演</span>`;
     return;
   }
-  if (S.phase === 'result') {
-    renderResult();
-    return;
-  }
-  if (S.phase === 'waiting') {
-    renderWaiting();
-    return;
-  }
-  renderChoose();
+  const risk = currentRisk();
+  el.innerHTML = `
+    <span class="tn__risk-tag">第 ${S.round + 1} / 5 季 · 示意风险</span>
+    <strong>${risk.name}</strong>
+    <span>${risk.desc}</span>
+    <div class="tn__track" aria-label="五季进度">${RISKS.map(
+      (r, i) => `<i class="${i < S.round || S.phase === 'result' && i === S.round ? 'is-done' : i === S.round ? 'is-now' : ''}" title="第 ${i + 1} 季：${r.name}"></i>`
+    ).join('')}</div>`;
 }
 
 function renderChoose() {
   const decoy = DECOYS.find((d) => d.id === S.decoy);
   const sound = SOUNDS.find((s) => s.id === S.sound);
-  const spent = (decoy?.cost || 0) + (sound?.cost || 0);
+  const protection = PROTECTIONS.find((p) => p.id === S.protection);
+  const island = ISLANDS.find((i) => i.id === S.island);
+  const risk = currentRisk();
+  const spent = (decoy?.cost || 0) + (sound?.cost || 0) + (protection?.cost || 0);
   const over = spent > BUDGET;
-  const canGo = S.island && !over;
+  const canGo = island && !over;
+  const factors = island ? seasonFactors(island, decoy, sound, protection) : null;
 
   panelEl.innerHTML = `
-    <div class="g__row">
-      <span class="g__lab">第 ${S.round + 1} 季 · ${MONTHS[Math.min(S.round, 4)]}</span>
+    <section class="tn__brief" aria-label="当季风险与已有经验">
+      <div class="tn__brief-head"><span>第 ${S.round + 1} 季 · ${MONTHS[Math.min(S.round, 4)]}</span><strong>${risk.name}</strong><em>示意风险</em></div>
+      <p>${risk.desc} 所有参数仅用于玩法推演，不对应真实项目统计。</p>
+      <div class="tn__legacy"><span>已有经验 +${points(S.experience)}</span><span>同岛群落延续 +${points(S.colony)}</span><span>换岛保留经验，群落延续只留在原岛</span></div>
+    </section>
+
+    <div class="g__row tn__choices">
+      <span class="g__lab">选岛</span>
       <div class="g__chips g__chips--even">
         ${ISLANDS.map(
           (it) => `
-          <button class="chip ${S.island === it.id ? 'is-on' : ''}" data-island="${it.id}">
+          <button class="chip ${S.island === it.id ? 'is-on' : ''}" data-island="${it.id}" aria-pressed="${S.island === it.id}">
             <span class="chip__n">${it.name}</span>
             <span class="chip__d">${it.desc}</span>
           </button>`
@@ -189,12 +392,12 @@ function renderChoose() {
       </div>
     </div>
 
-    <div class="g__row">
+    <div class="g__row tn__choices">
       <span class="g__lab">摆假鸟</span>
       <div class="g__chips g__chips--even">
         ${DECOYS.map(
           (it) => `
-          <button class="chip ${S.decoy === it.id ? 'is-on' : ''}" data-decoy="${it.id}">
+          <button class="chip ${S.decoy === it.id ? 'is-on' : ''}" data-decoy="${it.id}" aria-pressed="${S.decoy === it.id}">
             <span class="chip__n">${it.name}<em class="chip__cost">耗 ${it.cost}</em></span>
             <span class="chip__d">${it.desc}</span>
           </button>`
@@ -202,12 +405,12 @@ function renderChoose() {
       </div>
     </div>
 
-    <div class="g__row">
+    <div class="g__row tn__choices">
       <span class="g__lab">放声音</span>
       <div class="g__chips g__chips--even">
         ${SOUNDS.map(
           (it) => `
-          <button class="chip ${S.sound === it.id ? 'is-on' : ''}" data-sound="${it.id}">
+          <button class="chip ${S.sound === it.id ? 'is-on' : ''}" data-sound="${it.id}" aria-pressed="${S.sound === it.id}">
             <span class="chip__n">${it.name}<em class="chip__cost">耗 ${it.cost}</em></span>
             <span class="chip__d">${it.desc}</span>
           </button>`
@@ -215,18 +418,26 @@ function renderChoose() {
       </div>
     </div>
 
-    <div class="g__row">
-      <span class="g__lab">电力人力</span>
-      <div class="g__read">
-        <b class="${over ? 'is-over' : ''}">${spent}</b><span>/ ${BUDGET}</span>
-        ${
-          over
-            ? '<span class="g__dot">·</span><span class="g__warn">超了，得省一样</span>'
-            : !S.island
-              ? '<span class="g__dot">·</span><span>还没选岛</span>'
-              : ''
-        }
+    <div class="g__row tn__choices">
+      <span class="g__lab">保护措施</span>
+      <div class="g__chips g__chips--even tn__protections">
+        ${PROTECTIONS.map(
+          (it) => `
+          <button class="chip ${S.protection === it.id ? 'is-on' : ''}" data-protection="${it.id}" aria-pressed="${S.protection === it.id}">
+            <span class="chip__n">${it.name}<em class="chip__cost">耗 ${it.cost}</em></span>
+            <span class="chip__d">${it.desc}</span>
+          </button>`
+        ).join('')}
       </div>
+    </div>
+
+    <div class="tn__decision">
+      <div class="g__read">
+        <span>电力人力</span><b class="${over ? 'is-over' : ''}">${spent}</b><span>/ ${BUDGET}</span>
+        ${factors ? `<span class="g__dot">·</span><span>本季示意到达率</span><b id="tn-probability" data-value="${factors.p}">${percent(factors.p)}</b>` : ''}
+        ${over ? '<span class="g__warn">超了，得省一样</span>' : !island ? '<span>还没选岛</span>' : ''}
+      </div>
+      ${factors ? factorStrip(factors) : ''}
       <div class="g__acts">
         <button class="g__go" id="tn-go" ${canGo ? '' : 'disabled'}>等一个繁殖季</button>
       </div>
@@ -255,6 +466,12 @@ function bindChoose() {
       renderPanel();
     });
   });
+  panelEl.querySelectorAll('[data-protection]').forEach((b) => {
+    b.addEventListener('click', () => {
+      S.protection = b.dataset.protection;
+      renderPanel();
+    });
+  });
   panelEl.querySelector('#tn-go')?.addEventListener('click', runSeason);
 }
 
@@ -264,68 +481,85 @@ function runSeason() {
   const island = ISLANDS.find((i) => i.id === S.island);
   const decoy = DECOYS.find((d) => d.id === S.decoy);
   const sound = SOUNDS.find((s) => s.id === S.sound);
-  if (!island || !decoy || !sound) return;
-  if (decoy.cost + sound.cost > BUDGET) return;
+  const protection = PROTECTIONS.find((p) => p.id === S.protection);
+  if (!island || !decoy || !sound || !protection) return;
+  if (decoy.cost + sound.cost + protection.cost > BUDGET) return;
 
-  // 成功率：岛的底子 × 假鸟与声音的合力。
-  // 用加法再取幂，让「一端拉满 + 一端省着」和「两样中等」都有竞争力；
-  // 纯乘法会让两样中等永远占优，选择就没意义了。
-  const mix = decoy.value + sound.value;
-  const p = Math.min(0.92, island.base * Math.pow(mix, 2.1) * 2.6);
+  const risk = currentRisk();
+  const factors = seasonFactors(island, decoy, sound, protection);
+  factors.nestingLoss = clamp(factors.nestingLoss + island.risk * 0.25, 0, 0.8);
+  factors.rearingLoss = clamp(factors.rearingLoss + island.risk * 0.3, 0, 0.85);
+  const p = factors.p;
   S.lastP = p;
 
-  const roll = Math.random();
-  const arrived = roll < p;
-
+  const arrived = S.rng() < p;
   let birds = 0;
   let nests = 0;
   let chicks = 0;
   if (arrived) {
-    birds = 8 + Math.round(roll * 40);
-    nests = Math.round(birds * (0.3 + Math.random() * 0.3));
-    const hatch = 0.62 + Math.random() * 0.28 - island.risk;
-    chicks = Math.max(0, Math.round(nests * hatch * 0.72));
+    birds = 6 + Math.floor(S.rng() * 12) + Math.round(p * 18);
+    nests = Math.max(0, Math.round(birds * (0.32 + S.rng() * 0.16) * (1 - factors.nestingLoss)));
+    chicks = Math.max(0, Math.round(nests * (0.42 + S.rng() * 0.2) * (1 - factors.rearingLoss)));
   }
+
+  const experienceGain = arrived && nests > 0 ? 0.025 : 0.02;
+  const nextExperience = Math.min(0.1, S.experience + experienceGain);
+  const nextColony = Math.min(0.12, nests * 0.003 + chicks * 0.006);
+  const observation = arrived
+    ? `本季推演记录：${risk.name}经「${protection.name}」后，巢区示意损失 ${percent(factors.nestingLoss)}，雏鸟阶段示意损失 ${percent(factors.rearingLoss)}。下一季经验增加 ${points(experienceGain)}。`
+    : `这次未到达也留下了对照：${island.name}、${decoy.name}假鸟、${sound.name}声音与「${protection.name}」在${risk.name}下的示意到达率为 ${percent(p)}。下一季经验增加 ${points(experienceGain)}。`;
 
   S.birds = 0;
   S.nests = 0;
   S.chicks = 0;
-  S.cap = { arrived, birds, nests, chicks, p };
+  S.cap = {
+    round: S.round,
+    islandId: island.id,
+    island: island.name,
+    decoy: decoy.name,
+    sound: sound.name,
+    protection: protection.name,
+    risk: risk.name,
+    riskId: risk.id,
+    p,
+    factors,
+    arrived,
+    birds,
+    nests,
+    chicks,
+    experienceGain,
+    nextExperience,
+    nextColony,
+    observation,
+  };
+  S.experience = nextExperience;
+  S.colony = nextColony;
+  S.previousIsland = island.id;
   animBirds = 0;
   S.phase = 'waiting';
-  waitingUntil = performance.now() + 2200;
+  waitingDuration = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 90 : 1800;
+  waitingUntil = performance.now() + waitingDuration;
   renderPanel();
 
-  setTimeout(() => {
+  clearSeasonTimer();
+  seasonTimer = setTimeout(() => {
+    seasonTimer = null;
     S.phase = 'result';
     S.birds = birds;
     S.nests = nests;
     S.chicks = chicks;
-    S.seasons.push({
-      round: S.round,
-      island: island.name,
-      decoy: decoy.name,
-      sound: sound.name,
-      p,
-      arrived,
-      birds,
-      nests,
-      chicks,
-    });
+    S.seasons.push(S.cap);
     renderPanel();
-  }, 2300);
+  }, waitingDuration + 80);
 }
 
 function renderWaiting() {
+  const risk = currentRisk();
   panelEl.innerHTML = `
-    <div class="g__row">
-      <span class="g__lab">第 ${S.round + 1} 季 · ${MONTHS[Math.min(S.round, 4)]}</span>
-      <div class="g__read">
-        <span>假鸟摆好了，声音放出去了</span>
-      </div>
-    </div>
-    <div class="g__row">
-      <p class="g__note">剩下的事，得等。</p>
+    <div class="tn__waiting" role="status">
+      <span class="g__lab">第 ${S.round + 1} 季 · ${risk.name}</span>
+      <strong>假鸟、声音和保护措施已经落下，等这一季给出结果。</strong>
+      <p class="g__note">本季示意到达率 ${percent(S.cap?.p || 0)}，结果仍保留不确定性。</p>
     </div>
   `;
 }
@@ -336,34 +570,29 @@ function renderResult() {
   const arrived = last.arrived;
 
   panelEl.innerHTML = `
-    <div class="g__row">
-      <span class="g__lab">第 ${S.round + 1} 季 · ${MONTHS[Math.min(S.round, 4)]}</span>
-      <div class="g__read">
-        <b class="g__big" style="color:${arrived ? 'var(--bamboo)' : 'var(--ochre)'}">${
-          arrived ? last.birds : 0
-        }</b>
-        <span>${arrived ? '只落下来' : '一只也没来'}</span>
-        ${
-          arrived
-            ? `<span class="g__dot">·</span><span>筑巢</span><b>${last.nests}</b>
-               <span class="g__dot">·</span><span>出飞</span><b>${last.chicks}</b><span>雏</span>`
-            : ''
-        }
-        <span class="g__dot">·</span>
-        <span>估计概率</span><b>${Math.round(last.p * 100)}%</b>
+    <section class="tn__result" data-risk="${last.riskId}" data-arrived="${arrived}" data-birds="${last.birds}" data-nests="${last.nests}" data-chicks="${last.chicks}">
+      <div class="tn__result-head">
+        <span class="g__lab">第 ${S.round + 1} 季 · ${last.risk}</span>
+        <div class="g__read">
+          <b class="g__big" style="color:${arrived ? 'var(--bamboo)' : 'var(--ochre)'}">${last.birds}</b>
+          <span>${arrived ? '只落下来' : '没有落下'}</span>
+          <span class="g__dot">·</span><span>筑巢</span><b>${last.nests}</b>
+          <span class="g__dot">·</span><span>出飞</span><b>${last.chicks}</b><span>雏</span>
+          <span class="g__dot">·</span><span>示意到达率</span><b>${percent(last.p)}</b>
+        </div>
       </div>
-    </div>
-
-    <div class="g__row">
-      <p class="g__note">${
-        arrived
-          ? '它们落在礁石上，先是几只，然后一片白。护鸟的人退到观测棚里，数巢、记环志、不敢大声说话。'
-          : '这一季的礁石上只有假鸟。它们站在那儿，一直站到八月结束。招引从来不是一次就能成的事。'
-      }</p>
+      <p class="tn__selection">${last.island} · ${last.decoy}假鸟 · ${last.sound}声音 · ${last.protection}</p>
+      ${factorStrip(last.factors)}
+      <div class="tn__observation">
+        <strong>${arrived ? '这一季留下了什么' : '失败也留下了信息'}</strong>
+        <p>${last.observation}</p>
+        <p>下一季同岛群落延续 +${points(last.nextColony)}。换岛后经验仍保留，群落延续不接过去。</p>
+      </div>
+      <p class="tn__disclaimer">以上均为示意推演，不代表真实项目新观测或预测。</p>
       <div class="g__acts">
-        <button class="g__go" id="tn-next">${S.round >= 4 ? '看看这五年' : '下一个繁殖季'}</button>
+        <button class="g__go" id="tn-next">${S.round >= 4 ? '看看这五季' : '带着记录到下一季'}</button>
       </div>
-    </div>
+    </section>
   `;
 
   panelEl.querySelector('#tn-next')?.addEventListener('click', () => {
@@ -383,43 +612,46 @@ function renderEnd() {
   const success = S.seasons.filter((s) => s.arrived).length;
 
   panelEl.innerHTML = `
-    <div class="g__row">
-      <span class="g__lab">五年</span>
-      <div class="g__read">
-        <span>有鸟落下</span><b class="g__big">${success}</b><span>季</span>
-        <span class="g__dot">·</span>
-        <span>一共飞出</span><b class="g__big">${total}</b><span>只雏鸟</span>
+    <section class="tn__end">
+      <div class="tn__end-head">
+        <span class="g__lab">五季复盘</span>
+        <div class="g__read">
+          <span>有鸟落下</span><b class="g__big">${success}</b><span>季</span>
+          <span class="g__dot">·</span>
+          <span>示意出飞合计</span><b class="g__big">${total}</b><span>只雏鸟</span>
+        </div>
+        <div class="tn__season" aria-label="五季到达结果">
+          ${S.seasons
+            .map(
+              (s) =>
+                `<span class="tn__sq ${s.arrived ? 'is-yes' : 'is-no'}" title="第 ${s.round + 1} 季：${s.risk}"></span>`
+            )
+            .join('')}
+        </div>
       </div>
-      <div class="tn__season">
-        ${S.seasons
-          .map(
-            (s) =>
-              `<span class="tn__sq ${s.arrived ? 'is-yes' : 'is-no'}" title="第 ${s.round + 1} 季"></span>`
-          )
-          .join('')}
-      </div>
-    </div>
-
-    <div class="g__row">
-      <p class="g__note">${
-        total > 0
-          ? '它们一年只产一枚卵，孵不成就得再等一年。所以每一只出飞的雏鸟，都算得上一次侥幸。'
-          : '这五季，一只也没飞出来。假鸟在礁石上，站了五年。真实项目里，有的岛试了好几年。'
-      }</p>
+      <p class="tn__disclaimer">以下概率、数量和损失都是玩法示意。复盘用于解释选择的影响，不构成真实项目结论。</p>
+      <ol class="tn__review">
+        ${S.seasons.map(
+          (s) => `<li data-season="${s.round}" data-risk="${s.riskId}">
+            <div class="tn__review-title"><strong>第 ${s.round + 1} 季 · ${s.risk}</strong><span class="${s.arrived ? 'is-yes' : 'is-no'}">${s.arrived ? `${s.birds} 只落下` : '没有落下'}</span></div>
+            <p class="tn__selection">${s.island} · ${s.decoy}假鸟 · ${s.sound}声音 · ${s.protection}</p>
+            <div class="tn__review-numbers"><span>示意到达率 ${percent(s.p)}</span><span>筑巢 ${s.nests}</span><span>出飞 ${s.chicks}</span><span>下季经验 +${points(s.experienceGain)}</span><span>同岛群落 +${points(s.nextColony)}</span></div>
+            ${factorStrip(s.factors)}
+            <p>${s.observation}</p>
+          </li>`
+        ).join('')}
+      </ol>
       <div class="g__acts">
-        <button class="g__go g__go--quiet" id="tn-again">再守五年</button>
+        <button class="g__go g__go--quiet" id="tn-again">再守五季</button>
       </div>
-    </div>
-
-    <div class="g__row">
-      <p class="g__note" id="tn-save" style="color:var(--ink-300)">
-        象山韭山列岛从 2013 年开始招引，到 2025 年累计孵出 214 只雏鸟，占全球繁殖总量的八成以上。
-      </p>
-    </div>
+      <p class="g__note" id="tn-save">本地模式：这五季只留在这台设备上。</p>
+      <p class="tn__source">背景资料沿用站内已有记录：象山韭山列岛从 2013 年开始招引，到 2025 年累计孵出 214 只雏鸟。</p>
+    </section>
   `;
 
   panelEl.querySelector('#tn-again')?.addEventListener('click', () => {
-    S = newGame();
+    clearSeasonTimer();
+    S = newGame(S.seed);
     animBirds = 0;
     renderPanel();
   });

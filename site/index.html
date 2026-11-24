@@ -21,6 +21,9 @@
 <link rel="stylesheet" href="css/scroll.css?v=20261118a">
 <link rel="stylesheet" href="css/extra.css?v=20261118a">
 <link rel="stylesheet" href="css/games.css?v=20261118a">
+<link rel="stylesheet" href="css/journey.css?v=20261123a">
+<link rel="stylesheet" href="css/ledger-campaign.css?v=20261123a">
+<link rel="stylesheet" href="css/fieldwork.css?v=20261123a">
 <link rel="stylesheet" href="css/auth.css?v=20261118a">
 </head>
 <body>
@@ -48,34 +51,53 @@
 
   <div class="hero__inner">
     <div class="hero__left">
-      <p class="hero__kicker">互动式数字长卷 · 浙江生态地图</p>
-
-      <h1 class="hero__title">
-        两山<br>二十年
-      </h1>
-
-      <p class="hero__sub">一张可以走进去的浙江生态地图</p>
+      <div class="hero__heading">
+        <p class="hero__kicker">2005-2025 · 互动式数字长卷</p>
+        <h1 class="hero__title">两山<br><span>二十年</span></h1>
+        <p class="hero__sub">一张可以走进去的浙江生态地图</p>
+      </div>
 
       <p class="hero__lead">
-        <span class="hl">2005 年 8 月 15 日</span>，安吉余村。一座山被关掉了一半，
-        村里的账本从此换了一种算法。<br>
-        二十年后，浙江有十处地方可以拿来回答同一个问题：
+        <span class="hero__leadcontext"><span class="hl">2005 年 8 月 15 日</span>，安吉余村。一座山被关掉了一半，村里的账本从此换了一种算法。<br>二十年后，浙江有十处地方可以拿来回答同一个问题：</span>
         <span class="hl">一座山值多少钱，要算到哪一年为止。</span>
       </p>
 
-      <div class="hero__actions">
-        <a class="btn btn--seal" id="btn-atlas" href="atlas.html">进入 3D 展台</a>
-        <button class="btn btn--ghost" id="btn-enter">展 卷</button>
-        <button class="btn btn--ghost" id="btn-ledger">一亩山的账本</button>
-        <button class="btn btn--ghost" id="btn-birds">观鸟手账</button>
-        <button class="btn btn--ghost" id="btn-tern">等一只鸟回来</button>
-        <button class="btn btn--ghost" id="btn-stats">我的战绩</button>
+      <div class="hero__primary" aria-label="叙事主入口">
+        <button class="btn btn--seal" id="btn-enter" type="button">
+          <span class="btn__main">展卷</span><span class="btn__note">沿河入画</span>
+        </button>
+        <button class="btn btn--journey" id="btn-journey" type="button">
+          <span class="btn__main">十地考察</span><span class="btn__note">十章二十问</span>
+        </button>
       </div>
 
-      <p class="hero__meta">
-        「绿水青山就是金山银山」理念提出二十周年 · 数字人文互动作品<br>
-        一座山值多少钱，要算到哪一年为止
-      </p>
+      <section class="hero__play" aria-labelledby="hero-play-title">
+        <div class="hero__sectionhead">
+          <h2 id="hero-play-title">互动推演</h2>
+          <p>把理念放进具体的选择里</p>
+        </div>
+        <div class="hero__playgrid">
+          <button class="hero__playbtn" id="btn-ledger" type="button">
+            <span class="hero__playname">一亩山的账本</span><span class="hero__playdesc">一座山 · 二十年</span>
+          </button>
+          <button class="hero__playbtn" id="btn-birds" type="button">
+            <span class="hero__playname">观鸟手账</span><span class="hero__playdesc">一片湿地 · 四季</span>
+          </button>
+          <button class="hero__playbtn" id="btn-tern" type="button">
+            <span class="hero__playname">等一只鸟回来</span><span class="hero__playdesc">一座岛 · 年复一年</span>
+          </button>
+        </div>
+      </section>
+
+      <div class="hero__work">
+        <span class="hero__worklabel">作品入口</span>
+        <a class="hero__atlas" id="btn-atlas" href="atlas.html">进入 3D 展台 <span aria-hidden="true">↗</span></a>
+      </div>
+
+      <div class="hero__footer">
+        <p class="hero__meta">「绿水青山就是金山银山」理念提出二十周年 · 数字人文互动作品</p>
+        <button class="hero__stats" id="btn-stats" type="button">我的战绩 <span aria-hidden="true">→</span></button>
+      </div>
     </div>
 
     <div class="hero__right" aria-hidden="true">
@@ -101,7 +123,7 @@
   <section class="scroll" id="scroll" aria-label="浙江生态长卷">
     <div class="scroll__hintbar" id="hintbar">拖动、滚动或用方向键展卷</div>
 
-    <div class="scroll__viewport" id="scroll-viewport" tabindex="0" role="application"
+    <div class="scroll__viewport" id="scroll-viewport" tabindex="0" role="region" aria-roledescription="互动长卷"
          aria-label="可展卷的浙江生态手绘地图，用左右方向键在十处点位之间移动">
       <div class="scroll__track" id="scroll-track"></div>
     </div>
@@ -182,14 +204,14 @@
           <li>云和梯田：农村信息报《浙江省农业文化遗产保护大事记》2022-07-16；文化和旅游部《关于确定 21 家旅游景区为国家 5A 级旅游景区的公告》2024-02-06；人民网《丽水云和梯田捧回联合国大奖》2025-10-19；湖州市农业农村局全球重要农业文化遗产名录</li>
           <li>新溪桥村：本组实地调研与村级调研反馈表</li>
           <li>西溪湿地：人民网《我国首个国家湿地公园十周岁啦！》2015-02-25；杭州市林业水利局《湿地物语① 西溪湿地》2025；杭州网 2025-05-04；浙江省林业厅 2012-11-29</li>
-          <li>大陈岛：台州市人民政府《大陈岛》2024-09-04；浙江省住房和城乡建设厅《台州市椒江区大陈镇海岛绿能探索零碳美镇》2024-05-24；台州生态环境 2023-12-07；今日椒江 2023-11-27</li>
-          <li>桑基鱼塘：中国青年报·中青在线《浙江湖州桑基鱼塘被认定为全球重要农业文化遗产》2017-11-24；《中国水产》</li>
+          <li>大陈岛：人民日报《人工养贻贝 还能卖碳汇》2025-08-05；台州市人民政府《大陈岛》2024-09-04；浙江省住房和城乡建设厅 2024-05-24；今日椒江 2023-11-27</li>
+          <li>桑基鱼塘：湖州市农业农村局 2025；中国青年报·中青在线 2017-11-24</li>
           <li>滕头村：奉化区政府《美丽生态激活乡村发展动力》2023-06-30；奉化日报 2023-08-15、2025-08-20；中国宁波网 2008-12-15</li>
           <li>浙江省行政边界：公开地理数据（阿里云 DataV）</li>
           <li>领导人引语：核对自《习近平著作选读》第一卷、共产党员网全文、农业农村部转载座谈会通稿</li>
         </ul>
         <p class="src" style="margin-top:1rem">
-          凡未能核实的数字均未写入正文。核实过程见仓库 docs/research/ 目录。
+          核实过程与逐项出处保存在 <code>js/points.js</code> 和 <code>data/journey.js</code>，页内可直接查看。
         </p>
       </div>
 

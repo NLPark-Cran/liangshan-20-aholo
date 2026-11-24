@@ -900,14 +900,53 @@
 }
 
 @media (max-width: 560px) {
-  .hero__actions .btn {
-    flex: 1 1 calc(50% - var(--s3));
-    justify-content: center;
-    font-size: 0.9rem;
-    padding: 0.6rem 0.8rem;
-  }
-
   .codex__grid {
     grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  }
+}
+
+/* 首页长卷的小屏安全区与真实命中区；由 extra 最后统一覆盖旧规则。 */
+@media (max-width: 640px) {
+  .scroll__rail {
+    height: calc(96px + env(safe-area-inset-bottom, 0px));
+    padding: 0.25rem var(--s3) calc(0.25rem + env(safe-area-inset-bottom, 0px));
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    align-content: center;
+  }
+
+  .scroll__line {
+    order: 3;
+    flex-basis: 100%;
+    height: 32px;
+  }
+
+  .scroll__tools {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .scroll__tools .btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.875rem;
+    justify-content: center;
+  }
+
+  .scroll__tools .btn:last-child { margin-left: auto; }
+  .scroll__tools .btn span { display: inline; }
+  .mark__label { font-size: 0.875rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__heading,
+  .hero__lead,
+  .hero__primary,
+  .hero__play,
+  .hero__work,
+  .hero__footer,
+  .hero__right {
+    animation: none;
   }
 }

@@ -33,9 +33,9 @@
   --t-h1: clamp(1.7rem, 3.2vw, 2.6rem);
   --t-h2: clamp(1.25rem, 2.1vw, 1.7rem);
   --t-h3: clamp(1.02rem, 1.5vw, 1.2rem);
-  --t-body: clamp(0.94rem, 1.05vw, 1.04rem);
-  --t-small: 0.84rem;
-  --t-tiny: 0.72rem;
+  --t-body: clamp(1rem, 1.05vw, 1.08rem);
+  --t-small: 0.875rem;
+  --t-tiny: 0.75rem;
 
   /* 间距 */
   --s1: 0.25rem;
@@ -252,7 +252,9 @@ em {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--s2);
+  min-height: 44px;
   padding: 0.66rem 1.5rem;
   font-family: var(--font-kai);
   font-size: 1rem;

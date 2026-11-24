@@ -1,0 +1,788 @@
+/* fieldwork.css — 燕鸥风险推演与观鸟任务的新增界面
+   只覆盖 #tn-root / #bd-root，颜色、字体、字阶和间距沿用 base.css。 */
+
+#tn-root,
+#bd-root {
+  min-width: 0;
+  grid-template-rows: minmax(220px, 1fr) auto;
+}
+
+#tn-root .g__bar,
+#bd-root .g__bar {
+  min-width: 0;
+  max-height: 62dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+#tn-root .g__row,
+#bd-root .g__row,
+#tn-root .g__chips,
+#bd-root .g__chips {
+  min-width: 0;
+  max-width: 100%;
+}
+
+#tn-root button,
+#bd-root button,
+#ternlog .overlay__close,
+#birdlog .overlay__close {
+  min-height: 44px;
+}
+
+#tn-root .g__acts,
+#bd-root .g__acts {
+  flex-wrap: wrap;
+}
+
+/* ── 燕鸥：当季风险浮签 ───────────────────────────── */
+
+.tn__risk {
+  position: absolute;
+  z-index: 3;
+  inset: var(--s6) auto auto var(--s6);
+  display: grid;
+  width: min(25rem, calc(100% - var(--s12)));
+  gap: var(--s1);
+  padding: var(--s3) var(--s4);
+  color: var(--ink-700);
+  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border-left: 2px solid var(--ochre);
+  box-shadow: 0 var(--s2) var(--s6) color-mix(in srgb, var(--ink-900) 9%, transparent);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: tnRiskIn 0.45s var(--ease-in) both;
+}
+
+.tn__risk-tag {
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.5;
+  letter-spacing: 0.14em;
+  color: var(--ochre);
+}
+
+.tn__risk strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-h3);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--ink-900);
+}
+
+.tn__risk > span:not(.tn__risk-tag) {
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--ink-500);
+}
+
+.tn__track {
+  display: flex;
+  gap: var(--s1);
+  margin-top: var(--s2);
+}
+
+.tn__track i {
+  display: block;
+  flex: 1;
+  height: 2px;
+  background: var(--ink-150);
+}
+
+.tn__track i.is-now {
+  background: var(--ochre);
+}
+
+.tn__track i.is-done {
+  background: var(--bamboo);
+}
+
+/* ── 燕鸥：风险简报与选择 ─────────────────────────── */
+
+.tn__brief {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  background: color-mix(in srgb, var(--paper-warm) 52%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ochre) 45%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--paper-deep) 70%, transparent);
+}
+
+.tn__brief-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s3);
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  color: var(--ink-500);
+}
+
+.tn__brief-head strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-h3);
+  color: var(--ink-900);
+  letter-spacing: 0.06em;
+}
+
+.tn__brief-head em {
+  padding: 0 var(--s1);
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  color: var(--ochre);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ochre) 45%, transparent);
+}
+
+.tn__brief p,
+.tn__review p,
+.tn__observation p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  line-height: 1.65;
+  color: var(--ink-500);
+  overflow-wrap: anywhere;
+}
+
+.tn__legacy,
+.tn__review-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.55;
+  color: var(--ink-500);
+}
+
+.tn__choices {
+  display: grid;
+  grid-template-columns: 5em minmax(0, 1fr);
+  grid-auto-rows: max-content;
+  align-items: start;
+}
+
+.tn__choices > .g__lab {
+  min-width: 0;
+  padding-top: var(--s3);
+}
+
+.tn__choices .chip {
+  min-width: 0;
+  padding: var(--s2) var(--s3);
+}
+
+.tn__choices .chip__d {
+  font-size: var(--t-tiny);
+  line-height: 1.45;
+}
+
+#tn-root .tn__protections {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: visible;
+}
+
+.tn__decision {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  padding-top: var(--s2);
+  border-top: 1px solid color-mix(in srgb, var(--ink-150) 65%, transparent);
+}
+
+.tn__decision .g__acts {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.tn__factors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s3);
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.55;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.tn__factors span {
+  padding-bottom: 1px;
+  border-bottom: 1px dotted var(--ink-150);
+}
+
+.tn__factors [data-factor='risk'] {
+  color: var(--ochre);
+}
+
+.tn__factors [data-factor='protection'],
+.tn__factors [data-factor='experience'],
+.tn__factors [data-factor='colony'] {
+  color: var(--bamboo);
+}
+
+/* ── 燕鸥：等待、单季结果与复盘 ───────────────────── */
+
+.tn__waiting,
+.tn__result,
+.tn__end {
+  display: grid;
+  min-width: 0;
+  gap: var(--s3);
+}
+
+.tn__waiting {
+  padding: var(--s6) 0;
+}
+
+.tn__waiting > strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-h3);
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+.tn__result-head,
+.tn__end-head,
+.tn__review-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+}
+
+.tn__selection {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  line-height: 1.6;
+  color: var(--ink-700);
+  overflow-wrap: anywhere;
+}
+
+.tn__observation {
+  display: grid;
+  gap: var(--s1);
+  padding: var(--s3) var(--s4);
+  background: color-mix(in srgb, var(--bamboo) 7%, transparent);
+  border-left: 2px solid var(--bamboo);
+}
+
+.tn__observation > strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-body);
+  color: var(--ink-900);
+}
+
+.tn__disclaimer,
+.tn__source {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.6;
+  color: var(--ink-300);
+}
+
+.tn__result .g__acts,
+.tn__end .g__acts {
+  justify-content: flex-end;
+}
+
+.tn__review {
+  display: grid;
+  gap: var(--s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: season;
+}
+
+.tn__review > li {
+  display: grid;
+  min-width: 0;
+  gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  background: color-mix(in srgb, var(--paper) 82%, var(--paper-warm));
+  border: 1px solid color-mix(in srgb, var(--ink-150) 70%, transparent);
+}
+
+.tn__review-title strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-body);
+  color: var(--ink-900);
+}
+
+.tn__review-title span {
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+}
+
+.tn__review-title .is-yes {
+  color: var(--bamboo);
+}
+
+.tn__review-title .is-no {
+  color: var(--ochre);
+}
+
+/* ── 观鸟：镜位与键盘反馈 ─────────────────────────── */
+
+.bd__lens {
+  position: absolute;
+  z-index: 3;
+  inset: var(--s4) var(--s4) auto auto;
+  max-width: min(34rem, calc(100% - var(--s8)));
+  padding: var(--s2) var(--s3);
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.55;
+  letter-spacing: 0.03em;
+  color: var(--ink-700);
+  background: var(--paper);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  border-right: 2px solid var(--water);
+  box-shadow: 0 var(--s1) var(--s4) color-mix(in srgb, var(--ink-900) 8%, transparent);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+#bird-canvas:focus-visible {
+  outline: 2px solid var(--cinnabar);
+  outline-offset: -4px;
+}
+
+/* ── 观鸟：任务、进度与印章 ───────────────────────── */
+
+.bd__missions {
+  display: grid;
+  min-width: 0;
+  gap: var(--s2);
+}
+
+.bd__mission-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  color: var(--ink-500);
+}
+
+.bd__mission-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+}
+
+.bd__mission-head .g__lab {
+  min-width: 0;
+}
+
+.bd__mission-head strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-body);
+  color: var(--ink-900);
+}
+
+.bd__task-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s2);
+}
+
+.bd__task {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--s2);
+  min-width: 0;
+  padding: var(--s2) var(--s3);
+  background: color-mix(in srgb, var(--paper-warm) 36%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink-150) 62%, transparent);
+  transition: border-color 0.25s, background 0.25s;
+}
+
+.bd__task.is-done {
+  background: color-mix(in srgb, var(--bamboo) 8%, var(--paper));
+  border-color: color-mix(in srgb, var(--bamboo) 58%, transparent);
+}
+
+.bd__task.is-new {
+  animation: bdTaskIn 0.55s var(--ease-in) both;
+}
+
+.bd__task-index {
+  padding-top: 0.12em;
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  color: var(--ink-300);
+  font-variant-numeric: tabular-nums;
+}
+
+.bd__task-body {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.bd__task-body strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-small);
+  line-height: 1.45;
+  color: var(--ink-900);
+  overflow-wrap: anywhere;
+}
+
+.bd__task-body > span {
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.45;
+  color: var(--ink-500);
+}
+
+.bd__task > b {
+  padding-top: 0.12em;
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.bd__task.is-done > b {
+  color: var(--bamboo);
+}
+
+.bd__task progress {
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  margin-top: var(--s1);
+  overflow: hidden;
+  border: 0;
+  background: var(--paper-deep);
+}
+
+.bd__task progress::-webkit-progress-bar {
+  background: var(--paper-deep);
+}
+
+.bd__task progress::-webkit-progress-value {
+  background: var(--water);
+  transition: width 0.3s var(--ease-in);
+}
+
+.bd__task progress::-moz-progress-bar {
+  background: var(--water);
+}
+
+.bd__task.is-done progress::-webkit-progress-value {
+  background: var(--bamboo);
+}
+
+.bd__task.is-done progress::-moz-progress-bar {
+  background: var(--bamboo);
+}
+
+.bd__stamp {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-width: 0;
+  padding: var(--s2) var(--s3);
+  border-top: 1px dotted var(--ink-150);
+}
+
+.bd__stamp-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-family: var(--font-kai);
+  font-size: var(--t-body);
+  color: var(--ink-300);
+  border: 1px solid var(--ink-150);
+  border-radius: 50%;
+}
+
+.bd__stamp.is-earned .bd__stamp-mark {
+  color: var(--cinnabar);
+  border: 2px solid var(--cinnabar);
+  transform: rotate(-8deg);
+}
+
+.bd__stamp.is-new .bd__stamp-mark {
+  animation: bdStampIn 0.6s var(--ease-in) both;
+}
+
+.bd__stamp > div {
+  display: grid;
+  min-width: 0;
+}
+
+.bd__stamp strong {
+  font-family: var(--font-kai);
+  font-size: var(--t-small);
+  line-height: 1.45;
+  color: var(--ink-900);
+}
+
+.bd__stamp > div > span {
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  line-height: 1.45;
+  color: var(--ink-500);
+}
+
+.bd__site-row {
+  width: 100%;
+}
+
+.bd__site-row .chip {
+  min-width: 8.4em;
+}
+
+.bd__site-done {
+  margin-left: var(--s2);
+  font-family: var(--font-sans);
+  font-size: var(--t-tiny);
+  font-style: normal;
+  color: var(--bamboo);
+}
+
+.bd__round-row {
+  align-items: center;
+}
+
+#bd-root .bd__record-row .rec {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+@keyframes tnRiskIn {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--s2)));
+  }
+}
+
+@keyframes bdTaskIn {
+  50% {
+    border-color: var(--bamboo);
+    transform: translateY(calc(-1 * var(--s1)));
+  }
+}
+
+@keyframes bdStampIn {
+  from {
+    opacity: 0;
+    transform: rotate(-16deg) scale(1.3);
+  }
+}
+
+/* ── 窄屏：画布保留，面板内部滚动 ─────────────────── */
+
+@media (max-width: 720px) {
+  #tn-root,
+  #bd-root {
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: minmax(180px, 38dvh) minmax(0, 1fr);
+  }
+
+  #tn-root .g__stage,
+  #bd-root .g__stage {
+    min-height: 180px;
+  }
+
+  #tn-root .g__bar,
+  #bd-root .g__bar {
+    max-height: none;
+    min-height: 0;
+    scrollbar-gutter: auto;
+  }
+
+  .tn__risk {
+    inset: var(--s3) auto auto var(--s3);
+    width: calc(100% - var(--s6));
+    padding: var(--s2) var(--s3);
+  }
+
+  .tn__risk > span:not(.tn__risk-tag) {
+    font-size: var(--t-tiny);
+  }
+
+  .tn__brief {
+    padding: var(--s2) var(--s3);
+  }
+
+  .tn__legacy {
+    display: grid;
+    gap: var(--s1);
+  }
+
+  .tn__choices {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s1);
+  }
+
+  .tn__choices > .g__lab {
+    min-width: 0;
+    padding-top: 0;
+  }
+
+  .tn__choices .g__chips--even {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .tn__choices .chip {
+    flex: 0 0 8.2em;
+  }
+
+  #tn-root .tn__protections {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    overflow: visible;
+  }
+
+  #tn-root .tn__protections .chip {
+    min-width: 0;
+  }
+
+  #tn-root .tn__protections .chip__d {
+    display: block;
+  }
+
+  .tn__decision {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tn__decision .g__acts {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .tn__decision .g__go,
+  .tn__result .g__go,
+  .tn__end .g__go {
+    width: 100%;
+  }
+
+  .tn__result .g__acts,
+  .tn__end .g__acts {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .tn__review > li {
+    padding: var(--s3);
+  }
+
+  .bd__lens {
+    inset: var(--s3) var(--s3) auto auto;
+    max-width: calc(100% - var(--s6));
+  }
+
+  .bd__task-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bd__task {
+    align-items: center;
+  }
+
+  .bd__task-body {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--s2);
+  }
+
+  .bd__task-body > span {
+    grid-column: 1 / -1;
+  }
+
+  .bd__task progress {
+    grid-column: 1 / -1;
+  }
+
+  .bd__round-row .g__acts {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .bd__round-row .g__go {
+    flex: 1 1 0;
+    padding-inline: var(--s3);
+  }
+}
+
+@media (max-width: 420px) {
+  #tn-root .g__bar,
+  #bd-root .g__bar {
+    padding: var(--s3);
+  }
+
+  .tn__brief-head {
+    gap: var(--s1) var(--s2);
+  }
+
+  .tn__factors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s1) var(--s2);
+  }
+
+  .tn__review-numbers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s1) var(--s2);
+  }
+
+  .bd__mission-head > div {
+    gap: var(--s2);
+  }
+
+  .bd__task {
+    padding: var(--s2);
+  }
+
+  .bd__record-row .rec__head {
+    flex-wrap: wrap;
+  }
+
+  .bd__record-row .rec__name {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #tn-root *,
+  #bd-root *,
+  #tn-root *::before,
+  #tn-root *::after,
+  #bd-root *::before,
+  #bd-root *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
